@@ -34,7 +34,7 @@ int ENTITY::networkclipped(int snapping_client)
 
 int ENTITY::networkclipped(int snapping_client, vec2 check_pos)
 {
-	if(snapping_client == -1)
+/*	if(snapping_client == -1)
 		return 0;
 	
 	float dx = game.players[snapping_client]->view_pos.x-check_pos.x;
@@ -44,6 +44,6 @@ int ENTITY::networkclipped(int snapping_client, vec2 check_pos)
 		return 1;
 	
 	if(distance(game.players[snapping_client]->view_pos, check_pos) > 1100.0f)
-		return 1;
+		return 1;*/
 	return 0;
 }
