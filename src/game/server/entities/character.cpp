@@ -633,54 +633,8 @@ void CHARACTER::tick()
 	core.tick(true);
 	core.vel.y -= core.world->tuning.gravity;
 	
-	
-	if((config.sv_spacemode > 0) && (config.sv_spacemode < 3)) {
-		if(pos.x < layers_game_layer()->width*28 / 2) {
-			core.vel.x += config.sv_gravx / 100.0;
-		} else {
-			core.vel.x -= config.sv_gravx / 100.0;
-		}
-		if(config.sv_spacemode == 2) {
-			if(pos.y < layers_game_layer()->height*28 / 2) {
-				core.vel.y += config.sv_gravy / 100.0;
-			} else {
-				core.vel.y -= config.sv_gravy / 100.0;
-			}
-		} else {
-			core.vel.y += config.sv_gravy / 100.0;
-		}
-	} else if(config.sv_spacemode == 3){
-		if(pos.x < ((GAMECONTROLLER_CTF*)game.controller)->flags[team]->pos.x) {
-			core.vel.x += config.sv_gravx / 100.0;
-		} else {
-			core.vel.x -= config.sv_gravx / 100.0;
-		}
-
-		if(!is_grounded()) {
-			if(pos.y < ((GAMECONTROLLER_CTF*)game.controller)->flags[team]->pos.y) {
-				core.vel.y += config.sv_gravy / 100.0;
-			} else {
-				core.vel.y -= config.sv_gravy / 100.0;
-			}
-		}
-	} else {
-		core.vel.x += ((GAMECONTROLLER_CTF*)game.controller)->gravity_x(pos);
-		core.vel.y += ((GAMECONTROLLER_CTF*)game.controller)->gravity_y(pos);
-		
-		/*if(pos.x < ((GAMECONTROLLER_CTF*)game.controller)->gravcenter.x) {
-			core.vel.x += config.sv_gravx / 100.0;
-		} else {
-			core.vel.x -= config.sv_gravx / 100.0;
-		}
-
-		if(!is_grounded()) {
-			if(pos.y < ((GAMECONTROLLER_CTF*)game.controller)->gravcenter.y) {
-				core.vel.y += config.sv_gravy / 100.0;
-			} else {
-				core.vel.y -= config.sv_gravy / 100.0;
-			}
-		}*/		
-	}
+	core.vel.x += ((GAMECONTROLLER_CTF*)game.controller)->gravity_x(pos);
+	core.vel.y += ((GAMECONTROLLER_CTF*)game.controller)->gravity_y(pos);
 	
 	
 	float phys_size = 28.0f;
