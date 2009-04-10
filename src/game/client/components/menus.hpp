@@ -145,8 +145,6 @@ class MENUS : public COMPONENT
 	// found in menus_ingame.cpp
 	void render_game(RECT main_view);
 	void render_serverinfo(RECT main_view);
-	void render_servercontrol(RECT main_view);
-	void render_servercontrol_kick(RECT main_view);
 	void render_servercontrol_server(RECT main_view);
 	
 	// found in menus_browser.cpp

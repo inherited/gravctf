@@ -34,7 +34,6 @@
 #include "components/scoreboard.hpp"
 #include "components/skins.hpp"
 #include "components/sounds.hpp"
-#include "components/voting.hpp"
 
 GAMECLIENT gameclient;
 
@@ -58,7 +57,6 @@ static SCOREBOARD scoreboard;
 static SOUNDS sounds;
 static EMOTICON emoticon;
 static DAMAGEIND damageind;
-static VOTING voting;
 
 static PLAYERS players;
 static NAMEPLATES nameplates;
@@ -114,7 +112,6 @@ void GAMECLIENT::on_console_init()
 	motd = &::motd;
 	damageind = &::damageind;
 	mapimages = &::mapimages;
-	voting = &::voting;
 	
 	// make a list of all the systems, make sure to add them in the corrent render order
 	all.add(skins);
@@ -125,7 +122,6 @@ void GAMECLIENT::on_console_init()
 	all.add(controls);
 	all.add(camera);
 	all.add(sounds);
-	all.add(voting);
 	all.add(particles); // doesn't render anything, just updates all the particles
 	
 	all.add(&maplayers_background); // first to render
@@ -160,7 +156,6 @@ void GAMECLIENT::on_console_init()
 	input.add(binds);
 		
 	// add the some console commands
-	MACRO_REGISTER_COMMAND("team", "i", CFGFLAG_CLIENT, con_team, this, "Switch team");
 	MACRO_REGISTER_COMMAND("kill", "", CFGFLAG_CLIENT, con_kill, this, "Kill yourself");
 	
 	// register server dummy commands for tab completion
@@ -172,8 +167,6 @@ void GAMECLIENT::on_console_init()
 	MACRO_REGISTER_COMMAND("broadcast", "r", CFGFLAG_SERVER, con_serverdummy, 0, "Broadcast message");
 	/*MACRO_REGISTER_COMMAND("say", "r", CFGFLAG_SERVER, con_serverdummy, 0);*/
 	MACRO_REGISTER_COMMAND("set_team", "ii", CFGFLAG_SERVER, con_serverdummy, 0, "Set team of player to team");
-	MACRO_REGISTER_COMMAND("addvote", "r", CFGFLAG_SERVER, con_serverdummy, 0, "Add a voting option");
-	/*MACRO_REGISTER_COMMAND("vote", "", CFGFLAG_SERVER, con_serverdummy, 0);*/
 	
 	// let all the other components register their console commands
 	for(int i = 0; i < all.num; i++)
@@ -328,17 +321,13 @@ void GAMECLIENT::on_reset()
 
 void GAMECLIENT::update_local_character_pos()
 {
-	if(config.cl_predict && client_state() != CLIENTSTATE_DEMOPLAYBACK)
-	{
-		if(!snap.local_character || (snap.local_character->health < 0) || (snap.gameobj && snap.gameobj->game_over))
-		{
-			// don't use predicted
+	if ( config.cl_predict && client_state() != CLIENTSTATE_DEMOPLAYBACK ) {
+		if ( snap.local_character && ( snap.local_character->health > 0 ) ) {
+			local_character_pos = mix( predicted_prev_char.pos, 
+				predicted_char.pos, client_predintratick( ) );
 		}
-		else
-			local_character_pos = mix(predicted_prev_char.pos, predicted_char.pos, client_predintratick());
-	}
-	else if(snap.local_character && snap.local_prev_character)
-	{
+	
+	} else if( snap.local_character && snap.local_prev_character ) {
 		local_character_pos = mix(
 			vec2(snap.local_prev_character->x, snap.local_prev_character->y),
 			vec2(snap.local_character->x, snap.local_character->y), client_intratick());
@@ -621,21 +610,13 @@ void GAMECLIENT::on_snapshot()
 			{
 				const NETOBJ_PLAYER_INFO *info = (const NETOBJ_PLAYER_INFO *)data;
 				
-				clients[info->cid].team = info->team;
 				snap.player_infos[info->cid] = info;
 				
 				if(info->local)
 				{
 					snap.local_cid = item.id;
 					snap.local_info = info;
-					
-					if (info->team == -1)
-						snap.spectate = true;
 				}
-				
-				// calculate team-balance
-				if(info->team != -1)
-					snap.team_size[info->team]++;
 				
 			}
 			else if(item.type == NETOBJTYPE_CHARACTER)
@@ -653,10 +634,6 @@ void GAMECLIENT::on_snapshot()
 						evolve(&snap.characters[item.id].cur, client_tick());
 				}
 			}
-			else if(item.type == NETOBJTYPE_GAME)
-				snap.gameobj = (NETOBJ_GAME *)data;
-			else if(item.type == NETOBJTYPE_FLAG)
-				snap.flags[item.id%2] = (const NETOBJ_FLAG *)data;
 		}
 	}
 	
@@ -702,16 +679,6 @@ void GAMECLIENT::on_predict()
 	// we can't predict without our own id or own character
 	if(snap.local_cid == -1 || !snap.characters[snap.local_cid].active)
 		return;
-	
-	// don't predict anything if we are paused
-	if(snap.gameobj && snap.gameobj->paused)
-	{
-		if(snap.local_character)
-			predicted_char.read(snap.local_character);
-		if(snap.local_prev_character)
-			predicted_prev_char.read(snap.local_prev_character);
-		return;
-	}
 
 	// repredict character
 	WORLD_CORE world;
@@ -819,27 +786,7 @@ void GAMECLIENT::on_predict()
 
 void GAMECLIENT::CLIENT_DATA::update_render_info()
 {
-	render_info = skin_info;
-
-	// force team colors
-	if(gameclient.snap.gameobj && gameclient.snap.gameobj->flags&GAMEFLAG_TEAMS)
-	{
-		const int team_colors[2] = {65387, 10223467};
-		if(team >= 0 || team <= 1)
-		{
-			render_info.texture = gameclient.skins->get(skin_id)->color_texture;
-			render_info.color_body = gameclient.skins->get_color(team_colors[team]);
-			render_info.color_feet = gameclient.skins->get_color(team_colors[team]);
-		}
-	}		
-}
-
-void GAMECLIENT::send_switch_team(int team)
-{
-	NETMSG_CL_SETTEAM msg;
-	msg.team = team;
-	msg.pack(MSGFLAG_VITAL);
-	client_send_msg();	
+	return;
 }
 
 void GAMECLIENT::send_info(bool start)
@@ -872,11 +819,6 @@ void GAMECLIENT::send_kill(int client_id)
 	NETMSG_CL_KILL msg;
 	msg.pack(MSGFLAG_VITAL);
 	client_send_msg();
-}
-
-void GAMECLIENT::con_team(void *result, void *user_data)
-{
-	((GAMECLIENT*)user_data)->send_switch_team(console_arg_int(result, 0));
 }
 
 void GAMECLIENT::con_kill(void *result, void *user_data)

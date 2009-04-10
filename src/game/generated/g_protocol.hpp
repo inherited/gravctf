@@ -68,8 +68,6 @@ enum
 	NETOBJTYPE_PROJECTILE,
 	NETOBJTYPE_LASER,
 	NETOBJTYPE_PICKUP,
-	NETOBJTYPE_FLAG,
-	NETOBJTYPE_GAME,
 	NETOBJTYPE_CHARACTER_CORE,
 	NETOBJTYPE_CHARACTER,
 	NETOBJTYPE_PLAYER_INFO,
@@ -98,18 +96,11 @@ enum
 	NETMSGTYPE_SV_READYTOENTER,
 	NETMSGTYPE_SV_WEAPONPICKUP,
 	NETMSGTYPE_SV_EMOTICON,
-	NETMSGTYPE_SV_VOTE_CLEAROPTIONS,
-	NETMSGTYPE_SV_VOTE_OPTION,
-	NETMSGTYPE_SV_VOTE_SET,
-	NETMSGTYPE_SV_VOTE_STATUS,
 	NETMSGTYPE_CL_SAY,
-	NETMSGTYPE_CL_SETTEAM,
 	NETMSGTYPE_CL_STARTINFO,
 	NETMSGTYPE_CL_CHANGEINFO,
 	NETMSGTYPE_CL_KILL,
 	NETMSGTYPE_CL_EMOTICON,
-	NETMSGTYPE_CL_VOTE,
-	NETMSGTYPE_CL_CALLVOTE,
 	NUM_NETMSGTYPES
 };
 
@@ -154,30 +145,6 @@ struct NETOBJ_PICKUP
 	int subtype;
 };
 
-struct NETOBJ_FLAG
-{
-	int x;
-	int y;
-	int team;
-	int carried_by;
-};
-
-struct NETOBJ_GAME
-{
-	int flags;
-	int round_start_tick;
-	int game_over;
-	int sudden_death;
-	int paused;
-	int score_limit;
-	int time_limit;
-	int warmup;
-	int round_num;
-	int round_current;
-	int teamscore_red;
-	int teamscore_blue;
-};
-
 struct NETOBJ_CHARACTER_CORE
 {
 	int tick;
@@ -212,7 +179,6 @@ struct NETOBJ_PLAYER_INFO
 {
 	int local;
 	int cid;
-	int team;
 	int score;
 	int latency;
 	int latency_flux;
@@ -391,58 +357,6 @@ struct NETMSG_SV_EMOTICON
 	}
 };
 
-struct NETMSG_SV_VOTE_CLEAROPTIONS
-{
-	void pack(int flags)
-	{
-		msg_pack_start(NETMSGTYPE_SV_VOTE_CLEAROPTIONS, flags);
-		msg_pack_end();
-	}
-};
-
-struct NETMSG_SV_VOTE_OPTION
-{
-	const char *command;
-	void pack(int flags)
-	{
-		msg_pack_start(NETMSGTYPE_SV_VOTE_OPTION, flags);
-		msg_pack_string(command, -1);
-		msg_pack_end();
-	}
-};
-
-struct NETMSG_SV_VOTE_SET
-{
-	int timeout;
-	const char *description;
-	const char *command;
-	void pack(int flags)
-	{
-		msg_pack_start(NETMSGTYPE_SV_VOTE_SET, flags);
-		msg_pack_int(timeout);
-		msg_pack_string(description, -1);
-		msg_pack_string(command, -1);
-		msg_pack_end();
-	}
-};
-
-struct NETMSG_SV_VOTE_STATUS
-{
-	int yes;
-	int no;
-	int pass;
-	int total;
-	void pack(int flags)
-	{
-		msg_pack_start(NETMSGTYPE_SV_VOTE_STATUS, flags);
-		msg_pack_int(yes);
-		msg_pack_int(no);
-		msg_pack_int(pass);
-		msg_pack_int(total);
-		msg_pack_end();
-	}
-};
-
 struct NETMSG_CL_SAY
 {
 	int team;
@@ -452,17 +366,6 @@ struct NETMSG_CL_SAY
 		msg_pack_start(NETMSGTYPE_CL_SAY, flags);
 		msg_pack_int(team);
 		msg_pack_string(message, -1);
-		msg_pack_end();
-	}
-};
-
-struct NETMSG_CL_SETTEAM
-{
-	int team;
-	void pack(int flags)
-	{
-		msg_pack_start(NETMSGTYPE_CL_SETTEAM, flags);
-		msg_pack_int(team);
 		msg_pack_end();
 	}
 };
@@ -521,30 +424,6 @@ struct NETMSG_CL_EMOTICON
 	{
 		msg_pack_start(NETMSGTYPE_CL_EMOTICON, flags);
 		msg_pack_int(emoticon);
-		msg_pack_end();
-	}
-};
-
-struct NETMSG_CL_VOTE
-{
-	int vote;
-	void pack(int flags)
-	{
-		msg_pack_start(NETMSGTYPE_CL_VOTE, flags);
-		msg_pack_int(vote);
-		msg_pack_end();
-	}
-};
-
-struct NETMSG_CL_CALLVOTE
-{
-	const char *type;
-	const char *value;
-	void pack(int flags)
-	{
-		msg_pack_start(NETMSGTYPE_CL_CALLVOTE, flags);
-		msg_pack_string(type, -1);
-		msg_pack_string(value, -1);
 		msg_pack_end();
 	}
 };

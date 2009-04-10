@@ -19,8 +19,6 @@ static const char *netobj_names[] = {
 	"projectile",
 	"laser",
 	"pickup",
-	"flag",
-	"game",
 	"character_core",
 	"character",
 	"player_info",
@@ -42,8 +40,6 @@ static int netobj_sizes[] = {
 	sizeof(NETOBJ_PROJECTILE),
 	sizeof(NETOBJ_LASER),
 	sizeof(NETOBJ_PICKUP),
-	sizeof(NETOBJ_FLAG),
-	sizeof(NETOBJ_GAME),
 	sizeof(NETOBJ_CHARACTER_CORE),
 	sizeof(NETOBJ_CHARACTER),
 	sizeof(NETOBJ_PLAYER_INFO),
@@ -93,32 +89,6 @@ static int validate_pickup(void *data, int size)
 	return 0;
 }
 
-static int validate_flag(void *data, int size)
-{
-	NETOBJ_FLAG *obj = (NETOBJ_FLAG *)data;
-	if(sizeof(*obj) != size) return -1;
-	netobj_clamp_int("team", obj->team, 0, 1);
-	netobj_clamp_int("carried_by", obj->carried_by, -2, MAX_CLIENTS-1);
-	return 0;
-}
-
-static int validate_game(void *data, int size)
-{
-	NETOBJ_GAME *obj = (NETOBJ_GAME *)data;
-	if(sizeof(*obj) != size) return -1;
-	netobj_clamp_int("flags", obj->flags, 0, 256);
-	netobj_clamp_int("round_start_tick", obj->round_start_tick, 0, max_int);
-	netobj_clamp_int("game_over", obj->game_over, 0, 1);
-	netobj_clamp_int("sudden_death", obj->sudden_death, 0, 1);
-	netobj_clamp_int("paused", obj->paused, 0, 1);
-	netobj_clamp_int("score_limit", obj->score_limit, 0, max_int);
-	netobj_clamp_int("time_limit", obj->time_limit, 0, max_int);
-	netobj_clamp_int("warmup", obj->warmup, 0, max_int);
-	netobj_clamp_int("round_num", obj->round_num, 0, max_int);
-	netobj_clamp_int("round_current", obj->round_current, 0, max_int);
-	return 0;
-}
-
 static int validate_character_core(void *data, int size)
 {
 	NETOBJ_CHARACTER_CORE *obj = (NETOBJ_CHARACTER_CORE *)data;
@@ -151,7 +121,6 @@ static int validate_player_info(void *data, int size)
 	if(sizeof(*obj) != size) return -1;
 	netobj_clamp_int("local", obj->local, 0, 1);
 	netobj_clamp_int("cid", obj->cid, 0, MAX_CLIENTS-1);
-	netobj_clamp_int("team", obj->team, -1, 1);
 	return 0;
 }
 
@@ -304,57 +273,12 @@ static void *secure_unpack_sv_emoticon()
 	return &msg;
 }
 
-static void *secure_unpack_sv_vote_clearoptions()
-{
-	static NETMSG_SV_VOTE_CLEAROPTIONS msg;
-	return &msg;
-}
-
-static void *secure_unpack_sv_vote_option()
-{
-	static NETMSG_SV_VOTE_OPTION msg;
-	msg.command = msg_unpack_string();
-	return &msg;
-}
-
-static void *secure_unpack_sv_vote_set()
-{
-	static NETMSG_SV_VOTE_SET msg;
-	msg.timeout = msg_unpack_int();
-	msg.description = msg_unpack_string();
-	msg.command = msg_unpack_string();
-	if(msg.timeout < 0 || msg.timeout > 60) { msg_failed_on = "timeout"; return 0; }
-	return &msg;
-}
-
-static void *secure_unpack_sv_vote_status()
-{
-	static NETMSG_SV_VOTE_STATUS msg;
-	msg.yes = msg_unpack_int();
-	msg.no = msg_unpack_int();
-	msg.pass = msg_unpack_int();
-	msg.total = msg_unpack_int();
-	if(msg.yes < 0 || msg.yes > MAX_CLIENTS) { msg_failed_on = "yes"; return 0; }
-	if(msg.no < 0 || msg.no > MAX_CLIENTS) { msg_failed_on = "no"; return 0; }
-	if(msg.pass < 0 || msg.pass > MAX_CLIENTS) { msg_failed_on = "pass"; return 0; }
-	if(msg.total < 0 || msg.total > MAX_CLIENTS) { msg_failed_on = "total"; return 0; }
-	return &msg;
-}
-
 static void *secure_unpack_cl_say()
 {
 	static NETMSG_CL_SAY msg;
 	msg.team = msg_unpack_int();
 	msg.message = msg_unpack_string();
 	if(msg.team < 0 || msg.team > 1) { msg_failed_on = "team"; return 0; }
-	return &msg;
-}
-
-static void *secure_unpack_cl_setteam()
-{
-	static NETMSG_CL_SETTEAM msg;
-	msg.team = msg_unpack_int();
-	if(msg.team < -1 || msg.team > 1) { msg_failed_on = "team"; return 0; }
 	return &msg;
 }
 
@@ -396,22 +320,6 @@ static void *secure_unpack_cl_emoticon()
 	return &msg;
 }
 
-static void *secure_unpack_cl_vote()
-{
-	static NETMSG_CL_VOTE msg;
-	msg.vote = msg_unpack_int();
-	if(msg.vote < -1 || msg.vote > 1) { msg_failed_on = "vote"; return 0; }
-	return &msg;
-}
-
-static void *secure_unpack_cl_callvote()
-{
-	static NETMSG_CL_CALLVOTE msg;
-	msg.type = msg_unpack_string();
-	msg.value = msg_unpack_string();
-	return &msg;
-}
-
 static int validate_invalid(void *data, int size) { return -1; }
 typedef int(*VALIDATEFUNC)(void *data, int size);
 static VALIDATEFUNC validate_funcs[] = {
@@ -420,8 +328,6 @@ static VALIDATEFUNC validate_funcs[] = {
 	validate_projectile,
 	validate_laser,
 	validate_pickup,
-	validate_flag,
-	validate_game,
 	validate_character_core,
 	validate_character,
 	validate_player_info,
@@ -469,18 +375,11 @@ static SECUREUNPACKFUNC secure_unpack_funcs[] = {
 	secure_unpack_sv_readytoenter,
 	secure_unpack_sv_weaponpickup,
 	secure_unpack_sv_emoticon,
-	secure_unpack_sv_vote_clearoptions,
-	secure_unpack_sv_vote_option,
-	secure_unpack_sv_vote_set,
-	secure_unpack_sv_vote_status,
 	secure_unpack_cl_say,
-	secure_unpack_cl_setteam,
 	secure_unpack_cl_startinfo,
 	secure_unpack_cl_changeinfo,
 	secure_unpack_cl_kill,
 	secure_unpack_cl_emoticon,
-	secure_unpack_cl_vote,
-	secure_unpack_cl_callvote,
 	0x0
 };
 void *netmsg_secure_unpack(int type)
@@ -505,18 +404,11 @@ static const char *message_names[] = {
 	"sv_readytoenter",
 	"sv_weaponpickup",
 	"sv_emoticon",
-	"sv_vote_clearoptions",
-	"sv_vote_option",
-	"sv_vote_set",
-	"sv_vote_status",
 	"cl_say",
-	"cl_setteam",
 	"cl_startinfo",
 	"cl_changeinfo",
 	"cl_kill",
 	"cl_emoticon",
-	"cl_vote",
-	"cl_callvote",
 	""
 };
 

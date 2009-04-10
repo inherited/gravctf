@@ -76,14 +76,6 @@ Objects = [
 		NetIntRange("subtype", 0, 'max_int'),
 	]),
 
-	NetObject("Flag", [
-		NetIntAny("x"),
-		NetIntAny("y"),
-		
-		NetIntRange("team", 0, 1),
-		NetIntRange("carried_by", -2, 'MAX_CLIENTS-1')
-	]),
-
 	NetObject("Character_Core", [
 		NetIntAny("tick"),
 		NetIntAny("x"),
@@ -118,7 +110,6 @@ Objects = [
 	NetObject("Player_Info", [
 		NetIntRange("local", 0, 1),
 		NetIntRange("cid", 0, 'MAX_CLIENTS-1'),
-		NetIntRange("team", -1, 1),
 
 		NetIntAny("score"),
 		NetIntAny("latency"),

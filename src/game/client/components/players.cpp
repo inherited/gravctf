@@ -92,26 +92,17 @@ void PLAYERS::render_player(
 	TEE_RENDER_INFO render_info = gameclient.clients[info.cid].render_info;
 
 	// check for teamplay modes
-	bool is_teamplay = false;
 	bool new_tick = gameclient.new_tick;
-	if(gameclient.snap.gameobj)
-		is_teamplay = gameclient.snap.gameobj->flags&GAMEFLAG_TEAMS != 0;
 
 	// check for ninja	
-	if (player.weapon == WEAPON_NINJA)
-	{
+	if ( player.weapon == WEAPON_NINJA ) {
 		// change the skin for the player to the ninja
 		int skin = gameclient.skins->find("x_ninja");
-		if(skin != -1)
-		{
-			if(is_teamplay)
-				render_info.texture = gameclient.skins->get(skin)->color_texture;
-			else
-			{
-				render_info.texture = gameclient.skins->get(skin)->org_texture;
-				render_info.color_body = vec4(1,1,1,1);
-				render_info.color_feet = vec4(1,1,1,1);
-			}
+		
+		if (skin != -1) {
+			render_info.texture = gameclient.skins->get( skin )->org_texture;
+			render_info.color_body = vec4( 1,1,1,1 );
+			render_info.color_feet = vec4( 1,1,1,1 );
 		}	
 	}
 	
@@ -127,42 +118,14 @@ void PLAYERS::render_player(
 	
 	//float angle = 0;
 	
+	// just use the direct input if it's local player we are rendering
 	if(info.local && client_state() != CLIENTSTATE_DEMOPLAYBACK)
-	{
-		// just use the direct input if it's local player we are rendering
 		angle = get_angle(gameclient.controls->mouse_pos);
-	}
-	else
-	{
-		/*
-		float mixspeed = client_frametime()*2.5f;
-		if(player.attacktick != prev.attacktick) // shooting boosts the mixing speed
-			mixspeed *= 15.0f;
-		
-		// move the delta on a constant speed on a x^2 curve
-		float current = gameclient.clients[info.cid].angle;
-		float target = player.angle/256.0f;
-		float delta = angular_distance(current, target);
-		float sign = delta < 0 ? -1 : 1;
-		float new_delta = delta - 2*mixspeed*sqrt(delta*sign)*sign + mixspeed*mixspeed;
-		
-		// make sure that it doesn't vibrate when it's still
-		if(fabs(delta) < 2/256.0f)
-			angle = target;
-		else
-			angle = angular_approach(current, target, fabs(delta-new_delta));
-
-		gameclient.clients[info.cid].angle = angle;*/
-	}
 	
 	// use preditect players if needed
 	if(info.local && config.cl_predict && client_state() != CLIENTSTATE_DEMOPLAYBACK)
 	{
-		if(!gameclient.snap.local_character || (gameclient.snap.local_character->health < 0) || (gameclient.snap.gameobj && gameclient.snap.gameobj->game_over))
-		{
-		}
-		else
-		{
+		if ( gameclient.snap.local_character && ( gameclient.snap.local_character->health >= 0 ) ) {
 			// apply predicted results
 			gameclient.predicted_char.write(&player);
 			gameclient.predicted_prev_char.write(&prev);

@@ -170,15 +170,13 @@ int CONTROLS::snapinput(int *data)
 void CONTROLS::on_render()
 {
 	// update target pos
-	if(!(gameclient.snap.gameobj && gameclient.snap.gameobj->paused || gameclient.snap.spectate))
-		target_pos = gameclient.local_character_pos + mouse_pos;
+	//~ if ( !( gameclient.snap.gameobj && gameclient.snap.gameobj->paused || gameclient.snap.spectate))
+		//~ target_pos = gameclient.local_character_pos + mouse_pos;
 }
 
 bool CONTROLS::on_mousemove(float x, float y)
 {
-	if(gameclient.snap.gameobj && gameclient.snap.gameobj->paused)
-		return false;
-	mouse_pos += vec2(x, y); // TODO: ugly
+	mouse_pos += vec2( x, y ); // TODO: ugly
 
 	//
 	float camera_max_distance = 200.0f;
