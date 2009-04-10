@@ -42,9 +42,7 @@ void KILLMESSAGES::on_render()
 	float startx = width*1.5f-10.0f;
 	float y = 20.0f;
 
-	for(int i = 0; i < killmsg_max; i++)
-	{
-
+	for(int i = 0; i < killmsg_max; i++) {
 		int r = (killmsg_current+i+1)%killmsg_max;
 		if(client_tick() > killmsgs[r].tick+50*10)
 			continue;
@@ -62,23 +60,6 @@ void KILLMESSAGES::on_render()
 		// render victim tee
 		x -= 24.0f;
 		
-		if(gameclient.snap.gameobj && gameclient.snap.gameobj->flags&GAMEFLAG_FLAGS)
-		{
-			if(killmsgs[r].mode_special&1)
-			{
-				gfx_blend_normal();
-				gfx_texture_set(data->images[IMAGE_GAME].id);
-				gfx_quads_begin();
-
-				if(gameclient.clients[killmsgs[r].victim].team == 0) select_sprite(SPRITE_FLAG_BLUE);
-				else select_sprite(SPRITE_FLAG_RED);
-				
-				float size = 56.0f;
-				gfx_quads_drawTL(x, y-16, size/2, size);
-				gfx_quads_end();					
-			}
-		}
-		
 		render_tee(ANIMSTATE::get_idle(), &gameclient.clients[killmsgs[r].victim].render_info, EMOTE_PAIN, vec2(-1,0), vec2(x, y+28));
 		x -= 32.0f;
 		
@@ -94,28 +75,11 @@ void KILLMESSAGES::on_render()
 		}
 		x -= 52.0f;
 
-		if(killmsgs[r].victim != killmsgs[r].killer)
-		{
-			if(gameclient.snap.gameobj && gameclient.snap.gameobj->flags&GAMEFLAG_FLAGS)
-			{
-				if(killmsgs[r].mode_special&2)
-				{
-					gfx_blend_normal();
-					gfx_texture_set(data->images[IMAGE_GAME].id);
-					gfx_quads_begin();
-
-					if(gameclient.clients[killmsgs[r].killer].team == 0) select_sprite(SPRITE_FLAG_BLUE, SPRITE_FLAG_FLIP_X);
-					else select_sprite(SPRITE_FLAG_RED, SPRITE_FLAG_FLIP_X);
-					
-					float size = 56.0f;
-					gfx_quads_drawTL(x-56, y-16, size/2, size);
-					gfx_quads_end();				
-				}
-			}				
-			
+		if( killmsgs[r].victim != killmsgs[r].killer ) {
 			// render killer tee
 			x -= 24.0f;
-			render_tee(ANIMSTATE::get_idle(), &gameclient.clients[killmsgs[r].killer].render_info, EMOTE_ANGRY, vec2(1,0), vec2(x, y+28));
+			render_tee( ANIMSTATE::get_idle(), &gameclient.clients[killmsgs[r].killer].render_info, 
+				EMOTE_ANGRY, vec2(1,0), vec2(x, y+28));
 			x -= 32.0f;
 
 			// render killer name

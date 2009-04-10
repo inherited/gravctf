@@ -33,7 +33,7 @@ static void layershot_end()
 	config.cl_layershot++;
 }*/
 
-void select_sprite(SPRITE *spr, int flags, int sx, int sy)
+void select_sprite(sprite_t *spr, int flags, int sx, int sy)
 {
 	int x = spr->x+sx;
 	int y = spr->y+sy;

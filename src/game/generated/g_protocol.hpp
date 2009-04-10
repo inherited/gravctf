@@ -68,7 +68,10 @@ enum
 	NETOBJTYPE_PROJECTILE,
 	NETOBJTYPE_LASER,
 	NETOBJTYPE_PICKUP,
+<<<<<<< HEAD:src/game/generated/g_protocol.hpp
 	NETOBJTYPE_FLAG,
+=======
+>>>>>>> 8d8f238ba15fc030a8125cd689fc3f1a891be3a2:src/game/generated/g_protocol.hpp
 	NETOBJTYPE_CHARACTER_CORE,
 	NETOBJTYPE_CHARACTER,
 	NETOBJTYPE_PLAYER_INFO,
@@ -146,6 +149,7 @@ struct NETOBJ_PICKUP
 	int subtype;
 };
 
+<<<<<<< HEAD:src/game/generated/g_protocol.hpp
 struct NETOBJ_FLAG
 {
 	int x;
@@ -154,6 +158,8 @@ struct NETOBJ_FLAG
 	int carried_by;
 };
 
+=======
+>>>>>>> 8d8f238ba15fc030a8125cd689fc3f1a891be3a2:src/game/generated/g_protocol.hpp
 struct NETOBJ_CHARACTER_CORE
 {
 	int tick;
@@ -188,7 +194,6 @@ struct NETOBJ_PLAYER_INFO
 {
 	int local;
 	int cid;
-	int team;
 	int score;
 	int latency;
 	int latency_flux;

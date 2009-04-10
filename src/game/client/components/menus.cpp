@@ -713,8 +713,6 @@ int MENUS::render()
 				render_game(main_view);
 			else if(game_page == PAGE_SERVER_INFO)
 				render_serverinfo(main_view);
-			else if(game_page == PAGE_CALLVOTE)
-				render_servercontrol(main_view);
 			else if(game_page == PAGE_SETTINGS)
 				render_settings(main_view);
 		}

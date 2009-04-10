@@ -31,7 +31,6 @@ class GAMECLIENT
 	int predicted_tick;
 	int last_new_predicted_tick;
 
-	static void con_team(void *result, void *user_data);
 	static void con_kill(void *result, void *user_data);
 	
 public:
@@ -62,8 +61,6 @@ public:
 		const NETOBJ_CHARACTER *local_character;
 		const NETOBJ_CHARACTER *local_prev_character;
 		const NETOBJ_PLAYER_INFO *local_info;
-		const NETOBJ_FLAG *flags[2];
-		const NETOBJ_GAME *gameobj;
 
 		const NETOBJ_PLAYER_INFO *player_infos[MAX_CLIENTS];
 		const NETOBJ_PLAYER_INFO *info_by_score[MAX_CLIENTS];
@@ -133,7 +130,6 @@ public:
 
 	// actions
 	// TODO: move these
-	void send_switch_team(int team);
 	void send_info(bool start);
 	void send_kill(int client_id);
 	

@@ -109,25 +109,15 @@ void CHAT::add_line(int client_id, int team, const char *line)
 	{
 		str_copy(lines[current_line].name, "*** ", sizeof(lines[current_line].name));
 		str_format(lines[current_line].text, sizeof(lines[current_line].text), "%s", line);
-	}
-	else
-	{
-		if(gameclient.clients[client_id].team == -1)
-			lines[current_line].name_color = -1;
-
-		if(gameclient.snap.gameobj && gameclient.snap.gameobj->flags&GAMEFLAG_TEAMS)
-		{
-			if(gameclient.clients[client_id].team == 0)
-				lines[current_line].name_color = 0;
-			else if(gameclient.clients[client_id].team == 1)
-				lines[current_line].name_color = 1;
-		}
+	
+	} else {
+		lines[current_line].name_color = -1;
 		
 		str_copy(lines[current_line].name, gameclient.clients[client_id].name, sizeof(lines[current_line].name));
 		str_format(lines[current_line].text, sizeof(lines[current_line].text), ": %s", line);
 	}
 	
-	dbg_msg("chat", "%s%s", lines[current_line].name, lines[current_line].text);
+	dbg_msg( "chat", "%s%s", lines[current_line].name, lines[current_line].text );
 }
 
 void CHAT::on_render()

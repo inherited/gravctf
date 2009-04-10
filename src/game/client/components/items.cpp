@@ -116,35 +116,6 @@ void ITEMS::render_pickup(const NETOBJ_PICKUP *prev, const NETOBJ_PICKUP *curren
 	gfx_quads_end();
 }
 
-void ITEMS::render_flag(const NETOBJ_FLAG *prev, const NETOBJ_FLAG *current)
-{
-	float angle = 0.0f;
-	float size = 42.0f;
-
-	gfx_blend_normal();
-	gfx_texture_set(data->images[IMAGE_GAME].id);
-	gfx_quads_begin();
-
-	if(current->team == 0) // red team
-		select_sprite(SPRITE_FLAG_RED);
-	else
-		select_sprite(SPRITE_FLAG_BLUE);
-
-	gfx_quads_setrotation(angle);
-
-	vec2 pos = mix(vec2(prev->x, prev->y), vec2(current->x, current->y), client_intratick());
-	
-	// make sure that the flag isn't interpolated between capture and return
-	if(prev->carried_by != current->carried_by)
-		pos = vec2(current->x, current->y);
-
-	// make sure to use predicted position if we are the carrier
-	if(gameclient.snap.local_info && current->carried_by == gameclient.snap.local_info->cid)
-		pos = gameclient.local_character_pos;
-
-	gfx_quads_draw(pos.x, pos.y-size*0.75f, size, size*2);
-	gfx_quads_end();
-}
 
 
 void ITEMS::render_laser(const struct NETOBJ_LASER *current)
@@ -234,12 +205,6 @@ void ITEMS::on_render()
 		else if(item.type == NETOBJTYPE_LASER)
 		{
 			render_laser((const NETOBJ_LASER *)data);
-		}
-		else if(item.type == NETOBJTYPE_FLAG)
-		{
-			const void *prev = snap_find_item(SNAP_PREV, item.type, item.id);
-			if (prev)
-				render_flag((const NETOBJ_FLAG *)prev, (const NETOBJ_FLAG *)data);
 		}
 	}
 
