@@ -86,3 +86,6 @@ MACRO_CONFIG_INT(sv_spacemode, 0, 0, 3, CFGFLAG_SERVER, "Spacemod gamemode, 0 = 
 MACRO_CONFIG_INT(sv_laserenergy, 10000, -1000000, 1000000, CFGFLAG_SERVER, "Laser energy")
 MACRO_CONFIG_INT(sv_laserbounces, 2, -1000000, 1000000, CFGFLAG_SERVER, "Laser bounces")
 
+MACRO_CONFIG_INT( sv_smod_nade_collide_with_solid , 1, 0, 1, CFGFLAG_SERVER, "" )
+MACRO_CONFIG_INT( sv_smod_nade_collide_with_other , 1, 0, 1, CFGFLAG_SERVER, "" )
+MACRO_CONFIG_INT( sv_smod_nade_collide_with_player, 1, 0, 1, CFGFLAG_SERVER, "" )

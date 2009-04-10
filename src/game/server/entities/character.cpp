@@ -1,9 +1,12 @@
 #include <new>
+#include <stdint.h>
+
 #include <engine/e_server_interface.h>
 #include <engine/e_config.h>
 #include <game/server/gamecontext.hpp>
 #include <game/mapitems.hpp>
 
+#include "nade.hpp"
 #include "character.hpp"
 #include "laser.hpp"
 #include "projectile.hpp"
@@ -446,23 +449,39 @@ void CHARACTER::fire_weapon()
 
 		case WEAPON_GRENADE:
 		{
-			PROJECTILE *proj = new PROJECTILE(WEAPON_GRENADE,
-				player->client_id,
-				projectile_startpos,
-				direction,
-				(int)(server_tickspeed()*tuning.grenade_lifetime),
-				1, PROJECTILE::PROJECTILE_FLAGS_EXPLODE, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
+			projectileNade *projectile = new projectileNade( 
+				player->client_id, projectile_startpos, direction );
 
-			// pack the projectile and send it to the client directly
-			NETOBJ_PROJECTILE p;
-			proj->fill_info(&p);
+			NETOBJ_PROJECTILE projectile_snap_item;
+			projectile->fill_info( &projectile_snap_item );
 			
-			msg_pack_start(NETMSGTYPE_SV_EXTRAPROJECTILE, 0);
-			msg_pack_int(1);
-			for(unsigned i = 0; i < sizeof(NETOBJ_PROJECTILE)/sizeof(int); i++)
-				msg_pack_int(((int *)&p)[i]);
-			msg_pack_end();
-			server_send_msg(player->client_id);
+			msg_pack_start( NETMSGTYPE_SV_EXTRAPROJECTILE, 0 );
+			msg_pack_int( 1 );
+			
+			uint32_t data_count = sizeof( NETOBJ_PROJECTILE ) / sizeof( int );
+			for ( uint32_t index = 0; index < data_count; index++ )
+				msg_pack_int( ( (int *)&projectile_snap_item )[index] );
+			
+			msg_pack_end( );
+			server_send_msg( player->client_id );
+			
+			//~ PROJECTILE *proj = new PROJECTILE(WEAPON_GRENADE,
+				//~ player->client_id,
+				//~ projectile_startpos,
+				//~ direction,
+				//~ (int)(server_tickspeed()*tuning.grenade_lifetime),
+				//~ 1, PROJECTILE::PROJECTILE_FLAGS_EXPLODE, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
+//~ 
+			//~ // pack the projectile and send it to the client directly
+			//~ NETOBJ_PROJECTILE p;
+			//~ proj->fill_info(&p);
+			//~ 
+			//~ msg_pack_start(NETMSGTYPE_SV_EXTRAPROJECTILE, 0);
+			//~ msg_pack_int(1);
+			//~ for(unsigned i = 0; i < sizeof(NETOBJ_PROJECTILE)/sizeof(int); i++)
+				//~ msg_pack_int(((int *)&p)[i]);
+			//~ msg_pack_end();
+			//~ server_send_msg(player->client_id);
 
 			game.create_sound(pos, SOUND_GRENADE_FIRE);
 		} break;
