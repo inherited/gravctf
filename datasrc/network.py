@@ -84,26 +84,6 @@ Objects = [
 		NetIntRange("carried_by", -2, 'MAX_CLIENTS-1')
 	]),
 
-	NetObject("Game", [
-		NetIntRange("flags", 0, 256),
-		NetTick("round_start_tick"),
-		
-		NetIntRange("game_over", 0, 1),
-		NetIntRange("sudden_death", 0, 1),
-		NetIntRange("paused", 0, 1),
-		
-		NetIntRange("score_limit", 0, 'max_int'),
-		NetIntRange("time_limit", 0, 'max_int'),
-		
-		NetIntRange("warmup", 0, 'max_int'),
-		
-		NetIntRange("round_num", 0, 'max_int'),
-		NetIntRange("round_current", 0, 'max_int'),
-
-		NetIntAny("teamscore_red"),
-		NetIntAny("teamscore_blue"),
-	]),
-
 	NetObject("Character_Core", [
 		NetIntAny("tick"),
 		NetIntAny("x"),
@@ -229,35 +209,11 @@ Messages = [
 		NetIntRange("cid", 0, 'MAX_CLIENTS-1'),
 		NetIntRange("emoticon", 0, 'NUM_EMOTICONS-1'),
 	]),
-
-	NetMessage("sv_vote_clearoptions", [
-	]),
-	
-	NetMessage("sv_vote_option", [
-		NetString("command"),
-	]),
-
-	NetMessage("sv_vote_set", [
-		NetIntRange("timeout", 0, 60),
-		NetString("description"),
-		NetString("command"),
-	]),
-
-	NetMessage("sv_vote_status", [
-		NetIntRange("yes", 0, 'MAX_CLIENTS'),
-		NetIntRange("no", 0, 'MAX_CLIENTS'),
-		NetIntRange("pass", 0, 'MAX_CLIENTS'),
-		NetIntRange("total", 0, 'MAX_CLIENTS'),
-	]),
 		
 	### Client messages
 	NetMessage("cl_say", [
 		NetBool("team"),
 		NetString("message"),
-	]),
-
-	NetMessage("cl_setteam", [
-		NetIntRange("team", -1, 1),
 	]),
 	
 	NetMessage("cl_startinfo", [
@@ -280,14 +236,5 @@ Messages = [
 
 	NetMessage("cl_emoticon", [
 		NetIntRange("emoticon", 0, 'NUM_EMOTICONS-1'),
-	]),
-
-	NetMessage("cl_vote", [
-		NetIntRange("vote", -1, 1),
-	]),
-	
-	NetMessage("cl_callvote", [
-		NetString("type"),
-		NetString("value"),
 	]),
 ]
