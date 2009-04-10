@@ -509,8 +509,11 @@ void CHARACTER::fire_weapon()
 		
 	}
 
-	if(weapons[active_weapon].ammo > 0) // -1 == unlimited
-		weapons[active_weapon].ammo--;
+	if(!config.sv_infinite_ammo) {
+  		if(weapons[active_weapon].ammo > 0) // -1 == unlimited
+			weapons[active_weapon].ammo--;
+	}
+	
 	attack_tick = server_tick();
 	if(!reload_timer)
 		reload_timer = data->weapons.id[active_weapon].firedelay * server_tickspeed() / 1000;

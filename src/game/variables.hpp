@@ -81,6 +81,7 @@ MACRO_CONFIG_INT(sv_gravity, 20, -10000, 10000, CFGFLAG_SERVER, "Gravity =D")
 MACRO_CONFIG_INT(sv_gravity_factor, 500, -10000, 10000, CFGFLAG_SERVER, "Gravity factor")
 MACRO_CONFIG_INT(sv_gravity_power, 200, -10000, 10000, CFGFLAG_SERVER, "Gravity factor")
 MACRO_CONFIG_INT(sv_spacemode, 0, 0, 3, CFGFLAG_SERVER, "Spacemod gamemode, 0 = center tile(index 17), 1 = grav to middle, 2 = both, x and y, 3 = grav to flag")
+MACRO_CONFIG_INT(sv_infinite_ammo, 0, 0, 1, CFGFLAG_SERVER, "Infinite ammo")
 
 
 MACRO_CONFIG_INT(sv_laserenergy, 10000, -1000000, 1000000, CFGFLAG_SERVER, "Laser energy")
