@@ -276,9 +276,6 @@ void CONSOLE::on_render()
 
 		progress = 1.0f;
 	}
-
-	if (console_state == CONSOLE_OPEN && config.cl_editor)
-		toggle(0);	
 		
 	if (console_state == CONSOLE_CLOSED)
 		return;
