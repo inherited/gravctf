@@ -17,64 +17,18 @@
 
 #include <engine/e_client_interface.h>
 
-#include "gameclient.hpp"
-
-gameClient game_client;
-
-void 
-gameClient::on_console_init( )
+class gameComponent
 {
 	
-}
-
-void 
-gameClient::on_save( )
-{
-}
-
-void 
-gameClient::on_init( )
-{
-	blar = new gameMenuComponent( );
-}
-
-void 
-gameClient::on_connected( )
-{
-}
-
-void 
-gameClient::on_predict( )
-{
-}
-
-void 
-gameClient::on_snapshot( )
-{
-}
-
-int 
-gameClient::on_snapinput( int *data )
-{
-}
-
-void 
-gameClient::on_statechange( int state, int old )
-{
-}
-
-void 
-gameClient::on_render( )
-{
-	blar->render_background( );
-}
-
-void 
-gameClient::on_message( int msgtype )
-{
-}
-
-void 
-gameClient::modc_rcon_line( const char *line )
-{
-}
+	public:
+		virtual void    on_statechange( int new_state, int old_state );
+		virtual void    on_console_init( );
+		virtual void    on_init( );
+		virtual void    on_save( );
+		virtual void    on_reset( );
+		virtual void    on_render( );
+		virtual void    on_mapload( );
+		virtual bool    on_message( int msg, void *rawmsg );
+		virtual bool    on_mousemove( float x_pos, float y_pos );
+		virtual bool    on_input( INPUT_EVENT new_input );
+};

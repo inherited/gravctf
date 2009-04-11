@@ -15,66 +15,17 @@
  *      MA 02110-1301, USA.
  */
 
-#include <engine/e_client_interface.h>
+#include <base/vmath.hpp>
+#include <game/client/components/component.hpp>
 
-#include "gameclient.hpp"
-
-gameClient game_client;
-
-void 
-gameClient::on_console_init( )
+class gameMenuComponent : public gameComponent
 {
+	protected:
+		int     m_blob_texture;
+		vec4    m_gui_color;
 	
-}
-
-void 
-gameClient::on_save( )
-{
-}
-
-void 
-gameClient::on_init( )
-{
-	blar = new gameMenuComponent( );
-}
-
-void 
-gameClient::on_connected( )
-{
-}
-
-void 
-gameClient::on_predict( )
-{
-}
-
-void 
-gameClient::on_snapshot( )
-{
-}
-
-int 
-gameClient::on_snapinput( int *data )
-{
-}
-
-void 
-gameClient::on_statechange( int state, int old )
-{
-}
-
-void 
-gameClient::on_render( )
-{
-	blar->render_background( );
-}
-
-void 
-gameClient::on_message( int msgtype )
-{
-}
-
-void 
-gameClient::modc_rcon_line( const char *line )
-{
-}
+	public: 
+		gameMenuComponent( );
+		
+		void    render_background( );
+};

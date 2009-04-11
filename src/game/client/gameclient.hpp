@@ -15,8 +15,15 @@
  *      MA 02110-1301, USA.
  */
 
+#include <list>
+
+#include "game_modes/menu.hpp"
+
 class gameClient
 {
+	private:
+		gameMenuComponent *blar;
+	
 	public:
 		
 		/* Events der Engine */
