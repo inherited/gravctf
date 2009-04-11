@@ -10,7 +10,6 @@ MACRO_CONFIG_STR(password, 32, "", CFGFLAG_CLIENT, "Password to the server")
 MACRO_CONFIG_STR(logfile, 128, "", CFGFLAG_SAVE|CFGFLAG_CLIENT, "Filename to log all output to")
 
 MACRO_CONFIG_INT(cl_cpu_throttle, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "")
-MACRO_CONFIG_INT(cl_editor, 0, 0, 1, CFGFLAG_CLIENT, "")
 
 MACRO_CONFIG_INT(cl_eventthread, 0, 0, 1, CFGFLAG_CLIENT, "Enables the usage of a thread to pump the events")
 

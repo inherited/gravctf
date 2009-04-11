@@ -1639,9 +1639,6 @@ static void client_run()
 
 	/* start refreshing addresses while we load */
 	mastersrv_refresh_addresses();
-	
-	/* init the editor */
-	editor_init();
 
 	/* sound is allowed to fail */
 	snd_init();
@@ -1668,9 +1665,6 @@ static void client_run()
 	/* */
 	graph_init(&fps_graph, 0.0f, 200.0f);
 	
-	/* never start with the editor */
-	config.cl_editor = 0;
-		
 	inp_mouse_mode_relative();
 	
 	while (1)
@@ -1745,12 +1739,6 @@ static void client_run()
 
 		if(inp_key_pressed(KEY_LCTRL) && inp_key_pressed(KEY_LSHIFT) && inp_key_down('g'))
 			config.dbg_graphs ^= 1;
-
-		if(inp_key_pressed(KEY_LCTRL) && inp_key_pressed(KEY_LSHIFT) && inp_key_down('e'))
-		{
-			config.cl_editor = config.cl_editor^1;
-			inp_mouse_mode_relative();
-		}
 		
 		/*
 		if(!gfx_window_open())
@@ -1758,44 +1746,35 @@ static void client_run()
 		*/
 			
 		/* render */
-		if(config.cl_editor)
 		{
+			static PERFORMACE_INFO scope = {"client_update", 0};
+			perf_start(&scope);
 			client_update();
-			editor_update_and_render();
-			gfx_swap();
+			perf_end();
+		}
+		
+		if(config.dbg_stress)
+		{
+			if((frames%10) == 0)
+			{
+				client_render();
+				gfx_swap();
+			}
 		}
 		else
 		{
 			{
-				static PERFORMACE_INFO scope = {"client_update", 0};
+				static PERFORMACE_INFO scope = {"client_render", 0};
 				perf_start(&scope);
-				client_update();
+				client_render();
 				perf_end();
 			}
-			
-			if(config.dbg_stress)
-			{
-				if((frames%10) == 0)
-				{
-					client_render();
-					gfx_swap();
-				}
-			}
-			else
-			{
-				{
-					static PERFORMACE_INFO scope = {"client_render", 0};
-					perf_start(&scope);
-					client_render();
-					perf_end();
-				}
 
-				{
-					static PERFORMACE_INFO scope = {"gfx_swap", 0};
-					perf_start(&scope);
-					gfx_swap();
-					perf_end();
-				}
+			{
+				static PERFORMACE_INFO scope = {"gfx_swap", 0};
+				perf_start(&scope);
+				gfx_swap();
+				perf_end();
 			}
 		}
 

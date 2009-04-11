@@ -15,18 +15,12 @@
  *      MA 02110-1301, USA.
  */
 
-
-#include <string.h>
 #include <engine/e_client_interface.h>
+
 #include <game/version.hpp>
+#include <game/generated/g_protocol.hpp>
 
 #include "gameclient.hpp"
-#include "components/console.hpp"
-
-
-
-
-// clean hooks
 
 /*
 	Function: modc_entergame
@@ -54,7 +48,7 @@ extern "C" void modc_shutdown( )
 */
 extern "C" void modc_console_init( )
 { 
-	gameclient.on_console_init( ); 
+	game_client.on_console_init( ); 
 }
 
 /*
@@ -63,7 +57,7 @@ extern "C" void modc_console_init( )
 */
 extern "C" void modc_save_config( ) 
 { 
-	gameclient.on_save(); 
+	game_client.on_save( );
 }
 
 /*
@@ -76,7 +70,7 @@ extern "C" void modc_save_config( )
 */
 extern "C" void modc_init( ) 
 {
-	gameclient.on_init( ); 
+	game_client.on_init( ); 
 }
 
 /*
@@ -85,7 +79,7 @@ extern "C" void modc_init( )
 */
 extern "C" void modc_connected( ) 
 {
-	gameclient.on_connected( ); 
+	game_client.on_connected( ); 
 }
 
 /*
@@ -94,7 +88,7 @@ extern "C" void modc_connected( )
 */
 extern "C" void modc_predict( ) 
 { 
-	gameclient.on_predict( ); 
+	game_client.on_predict( ); 
 }
 
 /*
@@ -107,7 +101,7 @@ extern "C" void modc_predict( )
 */
 extern "C" void modc_newsnapshot( ) 
 { 
-	gameclient.on_snapshot( ); 
+	game_client.on_snapshot( ); 
 }
 
 /*
@@ -116,7 +110,7 @@ extern "C" void modc_newsnapshot( )
 */
 extern "C" int modc_snap_input( int *data ) 
 {
-	return gameclient.on_snapinput( data ); 
+	return game_client.on_snapinput( data ); 
 }
 
 /*
@@ -125,7 +119,7 @@ extern "C" int modc_snap_input( int *data )
 */
 extern "C" void modc_statechange( int state, int old ) 
 { 
-	gameclient.on_statechange( state, old ); 
+	game_client.on_statechange( state, old ); 
 }
 
 /*
@@ -134,7 +128,7 @@ extern "C" void modc_statechange( int state, int old )
 */
 extern "C" void modc_render( ) 
 {
-	gameclient.on_render( ); 
+	game_client.on_render( ); 
 }
 
 /*
@@ -143,7 +137,7 @@ extern "C" void modc_render( )
 */
 extern "C" void modc_message( int msgtype ) 
 { 
-	gameclient.on_message( msgtype ); 
+	game_client.on_message( msgtype ); 
 }
 
 /*
@@ -152,7 +146,7 @@ extern "C" void modc_message( int msgtype )
 */
 extern "C" void modc_rcon_line( const char *line ) 
 { 
-	gameclient.console->print_line( 1, line ); 
+	// game_client.console->print_line( 1, line ); 
 }
 
 extern "C" const char *modc_net_version( ) 
