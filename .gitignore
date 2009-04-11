@@ -1,3 +1,5 @@
 objs/*.o
 datasrc/*.pyc
 src/game/generated/*.hpp
+teeworlds_*
+

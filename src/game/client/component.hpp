@@ -7,21 +7,22 @@ class GAMECLIENT;
 
 class COMPONENT
 {
-protected:
-	GAMECLIENT *client;
-public:
-	virtual ~COMPONENT() {}
-	
-	virtual void on_statechange(int new_state, int old_state) {};
-	virtual void on_console_init() {};
-	virtual void on_init() {};
-	virtual void on_save() {};
-	virtual void on_reset() {};
-	virtual void on_render() {};
-	virtual void on_mapload() {};
-	virtual void on_message(int msg, void *rawmsg) {}
-	virtual bool on_mousemove(float x, float y) { return false; }
-	virtual bool on_input(INPUT_EVENT e) { return false; }
+	protected:
+		GAMECLIENT *client;
+		
+	public:
+		virtual ~COMPONENT() {}
+		
+		virtual void on_statechange( int new_state, int old_state ) {};
+		virtual void on_console_init( ) {};
+		virtual void on_init( ) {};
+		virtual void on_save( ) {};
+		virtual void on_reset( ) {};
+		virtual void on_render( ) {};
+		virtual void on_mapload( ) {};
+		virtual void on_message( int msg, void *rawmsg ) {}
+		virtual bool on_mousemove( float x_pos, float y_pos ) { return false; }
+		virtual bool on_input( INPUT_EVENT new_input ) { return false; }
 };
 
 #endif

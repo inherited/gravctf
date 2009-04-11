@@ -6,40 +6,35 @@
 
 #include "animstate.hpp"
 
-static void anim_seq_eval(ANIM_SEQUENCE *seq, float time, ANIM_KEYFRAME *frame)
+static void anim_seq_eval( ANIM_SEQUENCE *seq, float time, ANIM_KEYFRAME *frame )
 {
-	if(seq->num_frames == 0)
-	{
+	if(seq->num_frames == 0) {
 		frame->time = 0;
 		frame->x = 0;
 		frame->y = 0;
 		frame->angle = 0;
-	}
-	else if(seq->num_frames == 1)
-	{
+		
+	} else if(seq->num_frames == 1) {
 		*frame = seq->frames[0];
-	}
-	else
-	{
+	
+	} else {
 		//time = max(0.0f, min(1.0f, time / duration)); // TODO: use clamp
 		ANIM_KEYFRAME *frame1 = 0;
 		ANIM_KEYFRAME *frame2 = 0;
 		float blend = 0.0f;
 
 		// TODO: make this smarter.. binary search
-		for (int i = 1; i < seq->num_frames; i++)
-		{
-			if (seq->frames[i-1].time <= time && seq->frames[i].time >= time)
-			{
+		for ( int i = 1; i < seq->num_frames; i++ ) {
+			if (seq->frames[i-1].time <= time && seq->frames[i].time >= time) {
 				frame1 = &seq->frames[i-1];
 				frame2 = &seq->frames[i];
 				blend = (time - frame1->time) / (frame2->time - frame1->time);
+				
 				break;
 			}
 		}
 
-		if (frame1 && frame2)
-		{
+		if ( frame1 && frame2 ) {
 			frame->time = time;
 			frame->x = mix(frame1->x, frame2->x, blend);
 			frame->y = mix(frame1->y, frame2->y, blend);
@@ -48,14 +43,14 @@ static void anim_seq_eval(ANIM_SEQUENCE *seq, float time, ANIM_KEYFRAME *frame)
 	}
 }
 
-static void anim_add_keyframe(ANIM_KEYFRAME *seq, ANIM_KEYFRAME *added, float amount)
+static void anim_add_keyframe( ANIM_KEYFRAME *seq, ANIM_KEYFRAME *added, float amount )
 {
 	seq->x += added->x*amount;
 	seq->y += added->y*amount;
 	seq->angle += added->angle*amount;
 }
 
-static void anim_add(ANIMSTATE *state, ANIMSTATE *added, float amount)
+static void anim_add( ANIMSTATE *state, ANIMSTATE *added, float amount )
 {
 	anim_add_keyframe(&state->body, &added->body, amount);
 	anim_add_keyframe(&state->back_foot, &added->back_foot, amount);
@@ -84,10 +79,10 @@ ANIMSTATE *ANIMSTATE::get_idle()
 	static ANIMSTATE state;
 	static bool init = true;
 	
-	if(init)
-	{
+	if ( init ) {
 		state.set(&data->animations[ANIM_BASE], 0);
 		state.add(&data->animations[ANIM_IDLE], 0, 1.0f);
+		
 		init = false;
 	}
 	

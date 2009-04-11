@@ -3,16 +3,16 @@
 
 class ANIMSTATE
 {
-public:
-	ANIM_KEYFRAME body;
-	ANIM_KEYFRAME back_foot;
-	ANIM_KEYFRAME front_foot;
-	ANIM_KEYFRAME attach;
-	
-	void set(ANIMATION *anim, float time);
-	void add(ANIMATION *added, float time, float amount);
-	
-	static ANIMSTATE *get_idle();
+	public:
+		ANIM_KEYFRAME body;
+		ANIM_KEYFRAME back_foot;
+		ANIM_KEYFRAME front_foot;
+		ANIM_KEYFRAME attach;
+		
+		void set( ANIMATION *anim, float time );
+		void add( ANIMATION *added, float time, float amount );
+		
+		static ANIMSTATE *get_idle( );
 };
 
 //void anim_seq_eval(ANIM_SEQUENCE *seq, float time, ANIM_KEYFRAME *frame);
