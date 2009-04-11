@@ -21,7 +21,6 @@ class projectileNade : public PHYS_ENTITY
 		virtual void    do_explode( );
 		virtual void	die( );
 		virtual void    tick( );
-		virtual void    snap( int snapping_client );
 };
 
 #endif

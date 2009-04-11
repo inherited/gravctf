@@ -8,7 +8,6 @@
 #include <engine/e_server_interface.h>
 
 #include <game/layers.hpp>
-#include <game/server/gamemodes/ctf.hpp>
 #include <game/server/gamecontext.hpp>
 #include <game/generated/g_protocol.hpp>
 #include "physentity.hpp"

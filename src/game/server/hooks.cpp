@@ -18,31 +18,8 @@ extern "C"
 #include <game/gamecore.hpp>
 
 #include "gamecontext.hpp"
-#include "gamemodes/dm.hpp"
-#include "gamemodes/tdm.hpp"
-#include "gamemodes/ctf.hpp"
-#include "gamemodes/mod.hpp"
 
 TUNING_PARAMS tuning;
-
-static void check_pure_tuning()
-{
-	// might not be created yet during start up
-	if(!game.controller)
-		return;
-	
-	if(	strcmp(game.controller->gametype, "DM")==0 ||
-		strcmp(game.controller->gametype, "TDM")==0 ||
-		strcmp(game.controller->gametype, "CTF")==0)
-	{
-		TUNING_PARAMS p;
-		if(memcmp(&p, &tuning, sizeof(TUNING_PARAMS)) != 0)
-		{
-			dbg_msg("server", "resetting tuning due to pure server");
-			tuning = p;
-		}
-	}	
-}
 
 struct VOTEOPTION
 {
@@ -57,8 +34,6 @@ static VOTEOPTION *voteoption_last = 0;
 
 void send_tuning_params(int cid)
 {
-	check_pure_tuning();
-	
 	msg_pack_start(NETMSGTYPE_SV_TUNEPARAMS, MSGFLAG_VITAL);
 	int *params = (int *)&tuning;
 	for(unsigned i = 0; i < sizeof(tuning)/sizeof(int); i++)
@@ -83,8 +58,6 @@ void mods_client_predicted_input(int client_id, void *input)
 // Server hooks
 void mods_tick()
 {
-	check_pure_tuning();
-	
 	game.tick();
 
 #ifdef CONF_DEBUG
@@ -400,14 +373,8 @@ void mods_init()
 	//players = new PLAYER[MAX_CLIENTS];
 
 	// select gametype
-	if(strcmp(config.sv_gametype, "mod") == 0)
-		game.controller = new GAMECONTROLLER_MOD;
-	else if(strcmp(config.sv_gametype, "ctf") == 0)
-		game.controller = new GAMECONTROLLER_CTF;
-	else if(strcmp(config.sv_gametype, "tdm") == 0)
-		game.controller = new GAMECONTROLLER_TDM;
-	else
-		game.controller = new GAMECONTROLLER_DM;
+	
+	game.controller = new GAMECONTROLLER;
 
 	// setup core world
 	//for(int i = 0; i < MAX_CLIENTS; i++)

@@ -14,7 +14,8 @@
 
 GAMECONTROLLER::GAMECONTROLLER()
 {
-	gametype = "unknown";
+	gametype = "gravDM";
+	gravtiles = 0;
 	
 	//
 	do_warmup(config.sv_warmup);
@@ -370,6 +371,8 @@ bool GAMECONTROLLER::is_force_balanced()
 
 void GAMECONTROLLER::tick()
 {
+	do_player_score_wincheck();
+	
 	// do warmup
 	if(warmup)
 	{
