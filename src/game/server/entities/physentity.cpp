@@ -26,6 +26,7 @@ PHYS_ENTITY::PHYS_ENTITY( int owner_client, vec2 start_pos, vec2 direction )
 	m_owner_client = owner_client;
 	m_velocity     = direction * 10.0f;
 	attracted      = true;
+	collide        = true;
 	
 	game.world.insert_entity( this );
 	entity_list.push_front( this );
@@ -34,6 +35,7 @@ PHYS_ENTITY::PHYS_ENTITY( int owner_client, vec2 start_pos, vec2 direction )
 void PHYS_ENTITY::destroy( )
 {
 	entity_list.remove( this );
+	game.world.destroy_entity( this );
 	delete this;
 }
 
@@ -88,15 +90,14 @@ CHARACTER *PHYS_ENTITY::colliding_with_character( )
 
 void PHYS_ENTITY::die( )
 {
-	game.world.destroy_entity( this );
-	delete this;
+	destroy();
 }
 
 void PHYS_ENTITY::tick( )
 {
 	if(attracted) {
-		m_velocity.x += gravity_x( m_position );
-		m_velocity.y += gravity_y( m_position );	
+		m_velocity.x += gravity_x( m_position, tuning.gravity, tuning.gravity_factor, tuning.gravity_power );
+		m_velocity.y += gravity_y( m_position, tuning.gravity, tuning.gravity_factor, tuning.gravity_power );	
 	}
 	
 	
@@ -113,8 +114,8 @@ void PHYS_ENTITY::fill_info( NETOBJ_PROJECTILE *snap_item )
 	snap_item->x = roundf( m_position.x );
 	snap_item->y = roundf( m_position.y );
 	
-	snap_item->vx = m_velocity.x;
-	snap_item->vy = m_velocity.y;
+	snap_item->vx = m_velocity.x*0;
+	snap_item->vy = m_velocity.y*0;
 	
 	snap_item->type = WEAPON_WORLD;
 	snap_item->start_tick = m_start_tick;

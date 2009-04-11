@@ -197,8 +197,8 @@ void CHARACTER_CORE::tick(bool use_input)
 	//vel.y += world->tuning.gravity;
 	//vel.y += config.sv_gravy/100.0;
 	//vel.x += config.sv_gravx/100.0;
-	vel.x += gravity_x(pos);
-	vel.y += gravity_y(pos);
+	vel.x += gravity_x(pos, world->tuning.gravity, world->tuning.gravity_factor, world->tuning.gravity_power);
+	vel.y += gravity_y(pos, world->tuning.gravity, world->tuning.gravity_factor, world->tuning.gravity_power);
 	
 	float max_speed = grounded ? world->tuning.ground_control_speed : world->tuning.air_control_speed;
 	float accel = grounded ? world->tuning.ground_control_accel : world->tuning.air_control_accel;

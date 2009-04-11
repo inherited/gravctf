@@ -82,7 +82,7 @@ void CHARACTER::jump_overwrite()
 	return;
 	if ( input.jump ) {
 		input.jump = 0;
-		vec2 normalized_dir = normalize( gravity(pos) );
+		vec2 normalized_dir = normalize( gravity(pos,tuning.gravity, tuning.gravity_factor, tuning.gravity_power) );
 		
 		if ( !( core.jumped & 1 ) ) {
 			if ( is_grounded_b( normalized_dir ) ) {

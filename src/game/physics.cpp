@@ -7,7 +7,7 @@
 int gravtiles;
 vec2 gravtile[128];
 
-vec2 gravity(vec2 pos)
+vec2 gravity(vec2 pos, float g, float gfactor, float gpower)
 {
 	vec2 res;
 	res.x = 0;
@@ -19,19 +19,19 @@ vec2 gravity(vec2 pos)
 		float len = sqrtf(ax*ax + ay*ay);
 		ax = ax / len;
 		ay = ay / len;
-		len /= tuning.gravity_factor*1.0;
-		res.x += tuning.gravity * ax / (pow(len, tuning.gravity_power));
-		res.y += tuning.gravity * ay / (pow(len, tuning.gravity_power));
+		len /= gfactor*1.0;
+		res.x += g * ax / (pow(len, gpower));
+		res.y += g * ay / (pow(len, gpower));
 	}
 	return res;
 }
 
-float gravity_x(vec2 pos)
+float gravity_x(vec2 pos, float g, float gfactor, float gpower)
 {
-	return gravity(pos).x;
+	return gravity(pos, g, gfactor, gpower).x;
 }
 
-float gravity_y(vec2 pos)
+float gravity_y(vec2 pos, float g, float gfactor, float gpower)
 {
-	return gravity(pos).y;
+	return gravity(pos, g, gfactor, gpower).y;
 }

@@ -41,7 +41,7 @@ bool projectileNade::_is_colliding_with_nade( )
 		if ( *iter == this ) 
 			continue;
 		
-		if ( distance( m_position, (*iter)->m_position ) <= proximity_radius ) { //TODO: raus hier, nade klasse
+		if ( distance( m_position, (*iter)->m_position ) <= 30.0f ) { 
 			if ( config.sv_smod_nade_collide_with_other )
 				(*iter)->die( );
 			
@@ -54,7 +54,7 @@ bool projectileNade::_is_colliding_with_nade( )
 
 void projectileNade::die( ) {
 	do_explode();
-	PHYS_ENTITY::die( );
+	destroy();
 }
 
 void projectileNade::do_explode( ) 
@@ -81,8 +81,8 @@ void projectileNade::fill_info( NETOBJ_PROJECTILE *snap_item )
 {
 	PHYS_ENTITY::fill_info(snap_item);
 	
-	snap_item->vx = 0;
-	snap_item->vy = 0;
+	//snap_item->vx = 0;
+	//snap_item->vy = 0;
 	snap_item->type = WEAPON_GRENADE;
 }
 
