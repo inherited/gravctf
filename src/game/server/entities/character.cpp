@@ -11,7 +11,6 @@
 #include "laser.hpp"
 #include "projectile.hpp"
 #include <game/layers.hpp>
-#include <game/server/gamemodes/ctf.hpp>
 
 struct INPUT_COUNT
 {
@@ -82,7 +81,7 @@ void CHARACTER::jump_overwrite()
 	return;
 	if ( input.jump ) {
 		input.jump = 0;
-		vec2 normalized_dir = normalize( ((GAMECONTROLLER_CTF*)game.controller)->gravity(pos) );
+		vec2 normalized_dir = normalize( (game.controller)->gravity(pos) );
 		
 		if ( !( core.jumped & 1 ) ) {
 			if ( is_grounded_b( normalized_dir ) ) {
@@ -488,7 +487,7 @@ void CHARACTER::fire_weapon()
 		
 		case WEAPON_RIFLE:
 		{
-			new LASER(pos, direction, config.sv_laserenergy, player->client_id);
+			new LASER(pos, direction, tuning.laser_reach, player->client_id);
 			game.create_sound(pos, SOUND_RIFLE_FIRE);
 		} break;
 		
@@ -633,8 +632,8 @@ void CHARACTER::tick()
 	core.tick(true);
 	core.vel.y -= core.world->tuning.gravity;
 	
-	core.vel.x += ((GAMECONTROLLER_CTF*)game.controller)->gravity_x(pos);
-	core.vel.y += ((GAMECONTROLLER_CTF*)game.controller)->gravity_y(pos);
+	core.vel.x += (game.controller)->gravity_x(pos);
+	core.vel.y += (game.controller)->gravity_y(pos);
 	
 	
 	float phys_size = 28.0f;

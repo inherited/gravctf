@@ -56,26 +56,26 @@ void PHYS_ENTITY::destroy( )
 
  */
 
-PHYS_ENTITY PHYS_ENTITY::_colliding_with_entity( )
+PHYS_ENTITY *PHYS_ENTITY::colliding_with_entity( )
 {
 	std::list<PHYS_ENTITY *>::iterator iter;
 	
 	for ( iter = entity_list.begin( ); iter != entity_list.end( ); ++iter ) {
 		if ( *iter == this ) 
 			continue;
-		if ( distance( m_position, (*iter)->m_position ) < proximity_radius ) { //TODO: raus hier, nade klasse
-			return iter;
+		if ( distance( m_position, (*iter)->m_position ) < proximity_radius ) {
+			return (*iter);
 		}
 	}
 	return 0;
 }
 
-CHARACTER PHYS_ENTITY::_colliding_with_character( )
+CHARACTER *PHYS_ENTITY::colliding_with_character( )
 {
 	CHARACTER *chr = (CHARACTER *)game.world.find_first( NETOBJTYPE_CHARACTER );
 	
 	for ( ; chr; chr = (CHARACTER *)chr->typenext( ) ) {
-		float dist = distance( m_position, chr->pos );
+		//float dist = distance( m_position, chr->pos );
 		
 		if ( distance( m_position, chr->pos ) < CHARACTER::phys_size ) {
 			return chr;
@@ -88,6 +88,7 @@ CHARACTER PHYS_ENTITY::_colliding_with_character( )
 void PHYS_ENTITY::die( )
 {
 	game.world.destroy_entity( this );
+	delete this;
 }
 
 void PHYS_ENTITY::tick( )

@@ -1,8 +1,18 @@
 /* nade launcher projectile */
 
-class projectileNade : public ENTITY
+#ifndef NADE_H
+#define NADE_H
+
+#include <game/server/entity.hpp>
+#include <game/generated/gs_data.hpp>
+#include <game/generated/g_protocol.hpp>
+
+#include <game/gamecore.hpp>
+#include "physentity.hpp"
+
+class projectileNade : public PHYS_ENTITY
 {
-	private:
+	protected:
 		virtual bool    _is_colliding_with_nade( );
 	public:
 		projectileNade( int owner_client, vec2 start_pos, vec2 direction );
@@ -13,3 +23,5 @@ class projectileNade : public ENTITY
 		virtual void    tick( );
 		virtual void    snap( int snapping_client );
 };
+
+#endif

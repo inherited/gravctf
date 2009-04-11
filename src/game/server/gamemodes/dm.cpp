@@ -4,7 +4,8 @@
 
 GAMECONTROLLER_DM::GAMECONTROLLER_DM()
 {
-	gametype = "DM";
+	gametype = "gravDM";
+	gravtiles = 0;
 }
 
 void GAMECONTROLLER_DM::tick()
@@ -12,3 +13,4 @@ void GAMECONTROLLER_DM::tick()
 	do_player_score_wincheck();
 	GAMECONTROLLER::tick();
 }
+
