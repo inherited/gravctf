@@ -232,71 +232,39 @@ void GAMECONTEXT::send_broadcast(const char *text, int cid)
 // 
 void GAMECONTEXT::start_vote(const char *desc, const char *command)
 {
-	// check if a vote is already running
-	if(vote_closetime)
-		return;
-
-	// reset votes
-	vote_enforce = VOTE_ENFORCE_UNKNOWN;
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(players[i])
-			players[i]->vote = 0;
-	}
-	
-	// start vote
-	vote_closetime = time_get() + time_freq()*25;
-	str_copy(vote_description, desc, sizeof(vote_description));
-	str_copy(vote_command, command, sizeof(vote_description));
-	send_vote_set(-1);
-	send_vote_status(-1);
+	//~ // check if a vote is already running
+	//~ if(vote_closetime)
+		//~ return;
+//~ 
+	//~ // reset votes
+	//~ vote_enforce = VOTE_ENFORCE_UNKNOWN;
+	//~ for(int i = 0; i < MAX_CLIENTS; i++)
+	//~ {
+		//~ if(players[i])
+			//~ players[i]->vote = 0;
+	//~ }
+	//~ 
+	//~ // start vote
+	//~ vote_closetime = time_get() + time_freq()*25;
+	//~ str_copy(vote_description, desc, sizeof(vote_description));
+	//~ str_copy(vote_command, command, sizeof(vote_description));
+	//~ send_vote_set(-1);
+	//~ send_vote_status(-1);
 }
 
 
 void GAMECONTEXT::end_vote()
 {
-	vote_closetime = 0;
-	send_vote_set(-1);
+	//~ vote_closetime = 0;
+	//~ send_vote_set(-1);
 }
 
 void GAMECONTEXT::send_vote_set(int cid)
 {
-	NETMSG_SV_VOTE_SET msg;
-	if(vote_closetime)
-	{
-		msg.timeout = (vote_closetime-time_get())/time_freq();
-		msg.description = vote_description;
-		msg.command = vote_command;
-	}
-	else
-	{
-		msg.timeout = 0;
-		msg.description = "";
-		msg.command = "";
-	}
-	msg.pack(MSGFLAG_VITAL);
-	server_send_msg(cid);
 }
 
 void GAMECONTEXT::send_vote_status(int cid)
 {
-	NETMSG_SV_VOTE_STATUS msg = {0};
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(players[i])
-		{
-			msg.total++;
-			if(players[i]->vote > 0)
-				msg.yes++;
-			else if(players[i]->vote < 0)
-				msg.no++;
-			else
-				msg.pass++;
-		}
-	}	
-
-	msg.pack(MSGFLAG_VITAL);
-	server_send_msg(cid);
 	
 }
 
@@ -320,47 +288,6 @@ void GAMECONTEXT::tick()
 			players[i]->tick();
 	}
 	
-	// update voting
-	if(vote_closetime)
-	{
-		// abort the kick-vote on player-leave
-		if(vote_closetime == -1)
-		{
-			send_chat(-1, GAMECONTEXT::CHAT_ALL, "Vote aborted");
-			end_vote();
-		}
-		else
-		{
-			// count votes
-			int total = 0, yes = 0, no = 0;
-			for(int i = 0; i < MAX_CLIENTS; i++)
-			{
-				if(players[i])
-				{
-					total++;
-					if(players[i]->vote > 0)
-						yes++;
-					else if(players[i]->vote < 0)
-						no++;
-				}
-			}
-		
-			if(vote_enforce == VOTE_ENFORCE_YES || yes >= total/2+1)
-			{
-				console_execute_line(vote_command);
-				end_vote();
-				send_chat(-1, GAMECONTEXT::CHAT_ALL, "Vote passed");
-			
-				if(players[vote_creator])
-					players[vote_creator]->last_votecall = 0;
-			}
-			else if(vote_enforce == VOTE_ENFORCE_NO || time_get() > vote_closetime || no >= total/2+1 || yes+no == total)
-			{
-				end_vote();
-				send_chat(-1, GAMECONTEXT::CHAT_ALL, "Vote failed");
-			}
-		}
-	}
 }
 
 void GAMECONTEXT::snap(int client_id)
