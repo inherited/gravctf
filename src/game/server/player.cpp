@@ -80,7 +80,6 @@ void PLAYER::snap(int snapping_client)
 	info->local = 0;
 	info->cid = client_id;
 	info->score = score;
-	info->team = team;
 
 	if(client_id == snapping_client)
 		info->local = 1;	
