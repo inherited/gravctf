@@ -479,34 +479,6 @@ bool GAMECONTROLLER::is_teamplay() const
 
 void GAMECONTROLLER::snap(int snapping_client)
 {
-	NETOBJ_GAME *gameobj = (NETOBJ_GAME *)snap_new_item(NETOBJTYPE_GAME, 0, sizeof(NETOBJ_GAME));
-	gameobj->paused = game.world.paused;
-	gameobj->game_over = game_over_tick==-1?0:1;
-	gameobj->sudden_death = sudden_death;
-	
-	gameobj->score_limit = config.sv_scorelimit;
-	gameobj->time_limit = config.sv_timelimit;
-	gameobj->round_start_tick = round_start_tick;
-	gameobj->flags = game_flags;
-	
-	gameobj->warmup = warmup;
-	
-	gameobj->round_num = (strlen(config.sv_maprotation) && config.sv_rounds_per_map) ? config.sv_rounds_per_map : 0;
-	gameobj->round_current = round_count+1;
-	
-	
-	if(snapping_client == -1)
-	{
-		// we are recording a demo, just set the scores
-		gameobj->teamscore_red = teamscore[0];
-		gameobj->teamscore_blue = teamscore[1];
-	}
-	else
-	{
-		// TODO: this little hack should be removed
-		gameobj->teamscore_red = is_teamplay() ? teamscore[0] : game.players[snapping_client]->score;
-		gameobj->teamscore_blue = teamscore[1];
-	}
 }
 
 int GAMECONTROLLER::get_auto_team(int notthisid)
