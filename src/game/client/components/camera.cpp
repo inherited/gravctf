@@ -18,7 +18,7 @@ CAMERA::CAMERA()
 void CAMERA::on_render()
 {
 	//vec2 center;
-	zoom = 0.1f;
+	zoom = 1.0f;
 
 	// update camera center
 	float l = length(gameclient.controls->mouse_pos);
