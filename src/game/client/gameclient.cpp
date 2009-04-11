@@ -546,24 +546,6 @@ void GAMECLIENT::on_snapshot()
 		
 	process_events();
 
-	if(config.dbg_stress)
-	{
-		if((client_tick()%100) == 0)
-		{
-			char message[64];
-			int msglen = rand()%(sizeof(message)-1);
-			for(int i = 0; i < msglen; i++)
-				message[i] = 'a'+(rand()%('z'-'a'));
-			message[msglen] = 0;
-				
-			NETMSG_CL_SAY msg;
-			msg.team = rand()&1;
-			msg.message = message;
-			msg.pack(MSGFLAG_VITAL);
-			client_send_msg();
-		}
-	}
-
 	// go trough all the items in the snapshot and gather the info we want
 	{
 		snap.team_size[0] = snap.team_size[1] = 0;
@@ -595,6 +577,7 @@ void GAMECLIENT::on_snapshot()
 				
 				// find new skin
 				clients[cid].skin_id = gameclient.skins->find(clients[cid].skin_name);
+				
 				if(clients[cid].skin_id < 0)
 				{
 					clients[cid].skin_id = gameclient.skins->find("default");
@@ -610,7 +593,7 @@ void GAMECLIENT::on_snapshot()
 					clients[cid].skin_info.color_body = vec4(1,1,1,1);
 					clients[cid].skin_info.color_feet = vec4(1,1,1,1);
 				}
-
+				
 				clients[cid].update_render_info();
 				gameclient.snap.num_players++;
 				
@@ -795,6 +778,8 @@ void GAMECLIENT::on_predict()
 
 void GAMECLIENT::CLIENT_DATA::update_render_info()
 {
+	render_info = skin_info;
+	
 	return;
 }
 

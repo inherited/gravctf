@@ -377,6 +377,7 @@ void PLAYERS::render_player(
 	render_info.size = 64.0f; // force some settings
 	render_info.color_body.a = 1.0f;
 	render_info.color_feet.a = 1.0f;
+	
 	render_tee(&state, &render_info, player.emote, direction, position);
 
 	if(player.player_state == PLAYERSTATE_CHATTING)

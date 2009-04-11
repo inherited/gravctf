@@ -65,6 +65,9 @@ void HUD::render_cursor()
 	select_sprite(data->weapons.id[gameclient.snap.local_character->weapon%NUM_WEAPONS].sprite_cursor);
 	float cursorsize = 64;
 	draw_sprite(gameclient.controls->target_pos.x, gameclient.controls->target_pos.y, cursorsize);
+	//~ dbg_msg( "client/cursor", "xpos=%f ypos=%f", 
+		//~ gameclient.controls->target_pos.x, gameclient.controls->target_pos.y );
+	
 	gfx_quads_end();
 }
 

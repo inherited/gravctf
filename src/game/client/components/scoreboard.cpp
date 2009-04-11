@@ -137,5 +137,5 @@ void SCOREBOARD::on_render()
 	
 	gfx_mapscreen( 0, 0, x_size, y_size );
 
-	render_scoreboard( x_size / 2 - 325.0f, 150.0f, 325.0f );
+	render_scoreboard( x_size - 520.0f, 150.0f, 500.0f );
 }
