@@ -136,8 +136,3 @@ void MENUS::render_serverinfo(RECT main_view)
 	y += 32.0f+5.0f;
 	gfx_text(0, motd.x+x, motd.y+y, 16, gameclient.motd->server_motd, (int)motd.w);
 }
-
-static const char *format_command(const char *cmd)
-{
-	return cmd;
-}

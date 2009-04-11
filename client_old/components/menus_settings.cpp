@@ -316,8 +316,8 @@ void MENUS::render_settings_controls(RECT main_view)
 			}
 	}
 
-	RECT movement_settings, weapon_settings, voting_settings, chat_settings, misc_settings, reset_button;
-	ui_vsplit_l(&main_view, main_view.w/2-5.0f, &movement_settings, &voting_settings);
+	RECT movement_settings, weapon_settings, chat_settings, misc_settings, empty_space, reset_button;
+	ui_vsplit_l( &main_view, main_view.w / 2 - 5.0f, &movement_settings, &chat_settings );
 	
 	/* movement settings */
 	{
@@ -345,61 +345,63 @@ void MENUS::render_settings_controls(RECT main_view)
 	}
 	
 	/* weapon settings */
-	{
-		ui_hsplit_t(&weapon_settings, 10.0f, 0, &weapon_settings);
-		ui_draw_rect(&weapon_settings, vec4(1,1,1,0.25f), CORNER_ALL, 10.0f);
-		ui_margin(&weapon_settings, 10.0f, &weapon_settings);
-
-		gfx_text(0, weapon_settings.x, weapon_settings.y, 14, "Weapon", -1);
-		
-		ui_hsplit_t(&weapon_settings, 14.0f+5.0f+10.0f, 0, &weapon_settings);
-		ui_do_getbuttons(5, 12, weapon_settings);
-	}
+	//~ {
+		//~ ui_hsplit_t(&weapon_settings, 10.0f, 0, &weapon_settings);
+		//~ ui_draw_rect(&weapon_settings, vec4(1,1,1,0.25f), CORNER_ALL, 10.0f);
+		//~ ui_margin(&weapon_settings, 10.0f, &weapon_settings);
+//~ 
+		//~ gfx_text(0, weapon_settings.x, weapon_settings.y, 14, "Weapon", -1);
+		//~ 
+		//~ ui_hsplit_t(&weapon_settings, 14.0f+5.0f+10.0f, 0, &weapon_settings);
+		//~ ui_do_getbuttons(5, 12, weapon_settings);
+	//~ }
 	
-	/* voting settings */
-	{
-		ui_vsplit_l(&voting_settings, 10.0f, 0, &voting_settings);
-		ui_hsplit_t(&voting_settings, main_view.h/4-5.0f, &voting_settings, &chat_settings);
-		ui_draw_rect(&voting_settings, vec4(1,1,1,0.25f), CORNER_ALL, 10.0f);
-		ui_margin(&voting_settings, 10.0f, &voting_settings);
-	
-		gfx_text(0, voting_settings.x, voting_settings.y, 14, "Voting", -1);
-		
-		ui_hsplit_t(&voting_settings, 14.0f+5.0f+10.0f, 0, &voting_settings);
-		ui_do_getbuttons(12, 14, voting_settings);
-	}
+	//~ /* voting settings */
+	//~ {
+		//~ ui_vsplit_l(&voting_settings, 10.0f, 0, &voting_settings);
+		//~ ui_hsplit_t(&voting_settings, main_view.h/4-5.0f, &voting_settings, &chat_settings);
+		//~ ui_draw_rect(&voting_settings, vec4(1,1,1,0.25f), CORNER_ALL, 10.0f);
+		//~ ui_margin(&voting_settings, 10.0f, &voting_settings);
+	//~ 
+		//~ gfx_text(0, voting_settings.x, voting_settings.y, 14, "Voting", -1);
+		//~ 
+		//~ ui_hsplit_t(&voting_settings, 14.0f+5.0f+10.0f, 0, &voting_settings);
+		//~ ui_do_getbuttons(12, 14, voting_settings);
+	//~ }
 	
 	/* chat settings */
-	{
-		ui_hsplit_t(&chat_settings, 10.0f, 0, &chat_settings);
-		ui_hsplit_t(&chat_settings, main_view.h/4-10.0f, &chat_settings, &misc_settings);
-		ui_draw_rect(&chat_settings, vec4(1,1,1,0.25f), CORNER_ALL, 10.0f);
-		ui_margin(&chat_settings, 10.0f, &chat_settings);
-	
-		gfx_text(0, chat_settings.x, chat_settings.y, 14, "Chat", -1);
-		
-		ui_hsplit_t(&chat_settings, 14.0f+5.0f+10.0f, 0, &chat_settings);
-		ui_do_getbuttons(14, 16, chat_settings);
-	}
+	//~ {
+		//~ ui_hsplit_t(&chat_settings, 10.0f, 0, &chat_settings);
+		//~ ui_vsplit_l(&chat_settings, 10.0f, 0, &chat_settings);
+		//~ ui_hsplit_t(&chat_settings, main_view.h/4-10.0f, &chat_settings, &misc_settings);
+		//~ ui_draw_rect(&chat_settings, vec4(1,1,1,0.25f), CORNER_ALL, 10.0f);
+		//~ ui_margin(&chat_settings, 10.0f, &chat_settings);
+	//~ 
+		//~ gfx_text(0, chat_settings.x, chat_settings.y, 14, "Chat", -1);
+		//~ 
+		//~ ui_hsplit_t(&chat_settings, 14.0f+5.0f+10.0f, 0, &chat_settings);
+		//~ ui_do_getbuttons(12, 14, chat_settings);
+	//~ }
 	
 	/* misc settings */
-	{
-		ui_hsplit_t(&misc_settings, 10.0f, 0, &misc_settings);
-		ui_hsplit_t(&misc_settings, main_view.h/2-5.0f-45.0f, &misc_settings, &reset_button);
-		ui_draw_rect(&misc_settings, vec4(1,1,1,0.25f), CORNER_ALL, 10.0f);
-		ui_margin(&misc_settings, 10.0f, &misc_settings);
-	
-		gfx_text(0, misc_settings.x, misc_settings.y, 14, "Miscellaneous", -1);
-		
-		ui_hsplit_t(&misc_settings, 14.0f+5.0f+10.0f, 0, &misc_settings);
-		ui_do_getbuttons(16, 21, misc_settings);
-	}
+	//~ {
+		//~ ui_hsplit_t(&misc_settings, 10.0f, 0, &misc_settings);
+		//~ // ui_hsplit_t(&misc_settings, main_view.h/2-5.0f-45.0f, &misc_settings, &reset_button);
+		//~ ui_hsplit_t( &misc_settings, main_view.h / 2 - 50.0f, &misc_settings, &empty_space );
+		//~ ui_draw_rect(&misc_settings, vec4(1,1,1,0.25f), CORNER_ALL, 10.0f);
+		//~ ui_margin(&misc_settings, 10.0f, &misc_settings);
+	//~ 
+		//~ gfx_text(0, misc_settings.x, misc_settings.y, 14, "Miscellaneous", -1);
+		//~ 
+		//~ ui_hsplit_t(&misc_settings, 14.0f+5.0f+10.0f, 0, &misc_settings);
+		//~ ui_do_getbuttons(14, 16, misc_settings);
+	//~ }
 	
 	// defaults
-	ui_hsplit_t(&reset_button, 10.0f, 0, &reset_button);
-	static int default_button = 0;
-	if (ui_do_button((void*)&default_button, "Reset to defaults", 0, &reset_button, ui_draw_menu_button, 0))
-		gameclient.binds->set_defaults();
+	//~ ui_hsplit_t(&reset_button, 10.0f, 0, &reset_button);
+	//~ static int default_button = 0;
+	//~ if (ui_do_button((void*)&default_button, "Reset to defaults", 0, &reset_button, ui_draw_menu_button, 0))
+		//~ gameclient.binds->set_defaults();
 }
 
 void MENUS::render_settings_graphics(RECT main_view)

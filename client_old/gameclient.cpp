@@ -79,9 +79,11 @@ static void load_sounds_thread( void *do_render )
 		if ( do_render )
 			gameclient.menus->render_loading( load_current / (float)load_total );
 			
-		for ( int i = 0; i < data->sounds[sound_index].num_sounds; i++ ) {
-			int id = snd_load_wv(data->sounds[sound_index].sounds[i].filename);
-			data->sounds[sound_index].sounds[i].id = id;
+		for ( int index = 0; index < data->sounds[sound_index].num_sounds; index++ ) {
+			int id = snd_load_wv( 
+				data->sounds[sound_index].sounds[index].filename );
+			
+			data->sounds[sound_index].sounds[index].id = id;
 		}
 
 		if ( do_render )
@@ -113,49 +115,50 @@ void GAMECLIENT::on_console_init()
 	mapimages = &::mapimages;
 	
 	//~ // make a list of all the systems, make sure to add them in the corrent render order
-	//~ all.add(skins);
-	//~ all.add(mapimages);
-	//~ all.add(effects); // doesn't render anything, just updates effects
-	//~ all.add(particles);
-	//~ all.add(binds);
-	//~ all.add(controls);
-	//~ all.add(camera);
-	//~ all.add(sounds);
-	//~ all.add(particles); // doesn't render anything, just updates all the particles
-	//~ 
-	//~ all.add(&maplayers_background); // first to render
-	//~ all.add(&particles->render_trail);
-	//~ all.add(&particles->render_explosions);
-	//~ all.add(&items);
-	//~ all.add(&players);
-	//~ all.add(&maplayers_foreground);
-	//~ all.add(&nameplates);
-	//~ all.add(&particles->render_general);
-	//~ all.add(damageind);
-	//~ all.add(&hud);
-	//~ all.add(&emoticon);
-	//~ all.add(&killmessages);
-	//~ all.add(chat);
-	//~ all.add(&broadcast);
-	//~ all.add(&debughud);
-	//~ all.add(&scoreboard);
-	//~ all.add(motd);
-	//~ all.add(menus);
-	//~ all.add(console);
-	//~ 
-	//~ // build the input stack
-	//~ input.add(&menus->binder); // this will take over all input when we want to bind a key
-	//~ input.add(&binds->special_binds);
-	//~ input.add(console);
-	//~ input.add(chat); // chat has higher prio due to tha you can quit it by pressing esc
-	//~ input.add(motd); // for pressing esc to remove it
-	//~ input.add(menus);
-	//~ input.add(&emoticon);
-	//~ input.add(controls);
-	//~ input.add(binds);
+	all.add(skins);
+	all.add(mapimages);
+	all.add(effects); // doesn't render anything, just updates effects
+	all.add(particles);
+	all.add(binds);
+	all.add(controls);
+	all.add(camera);
+	all.add(sounds);
+	all.add(particles); // doesn't render anything, just updates all the particles
+	
+	all.add(&maplayers_background); // first to render
+	all.add(&particles->render_trail);
+	all.add(&particles->render_explosions);
+	all.add(&items);
+	all.add(&players);
+	all.add(&maplayers_foreground);
+	all.add(&nameplates);
+	all.add(&particles->render_general);
+	all.add(damageind);
+	all.add(&hud);
+	all.add(&emoticon);
+	all.add(&killmessages);
+	all.add(chat);
+	all.add(&broadcast);
+	all.add(&debughud);
+	all.add(&scoreboard);
+	all.add(motd);
+	all.add(menus);
+	all.add(console);
+	
+	// build the input stack
+	input.add(&menus->binder); // this will take over all input when we want to bind a key
+	input.add(&binds->special_binds);
+	input.add(console);
+	input.add(chat); // chat has higher prio due to tha you can quit it by pressing esc
+	input.add(motd); // for pressing esc to remove it
+	input.add(menus);
+	input.add(&emoticon);
+	input.add(controls);
+	input.add(binds);
 		
 	// add the some console commands
-	MACRO_REGISTER_COMMAND("kill", "", CFGFLAG_CLIENT, con_kill, this, "Kill yourself");
+	MACRO_REGISTER_COMMAND( "kill", "", 
+		CFGFLAG_CLIENT, con_kill, this, "Kill yourself" );
 	
 	// register server dummy commands for tab completion
 	MACRO_REGISTER_COMMAND( "tune", "si", 
@@ -175,8 +178,8 @@ void GAMECLIENT::on_console_init()
 		CFGFLAG_SERVER, con_serverdummy, 0, "Set team of player to team");
 	
 	// let all the other components register their console commands
-	for(int i = 0; i < all.num; i++)
-		all.components[i]->on_console_init();
+	for ( int i = 0; i < all.num; i++ )
+		all.components[i]->on_console_init( );
 		
 	//
 	suppress_events = false;
