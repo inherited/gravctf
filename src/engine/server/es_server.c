@@ -89,6 +89,8 @@ typedef struct
 /* */
 typedef struct
 {
+	int world;
+	int new_world;
 	/* connection state info */
 	int state;
 	int latency;
@@ -1075,36 +1077,46 @@ static int server_run()
 			perf_start(&rootscope);
 			
 			/* load new map TODO: don't poll this */
-			if(strcmp(config.sv_map, current_map) != 0 || config.sv_map_reload)
+			//int k;
+			//for(k = 0; k < MAX_CLIENTS; k++)
 			{
-				config.sv_map_reload = 0;
-				
-				/* load map */
-				if(server_load_map(config.sv_map))
+				if(strcmp(config.sv_map, current_map) != 0 || config.sv_map_reload)
+				//if(clients[k].new_world != clients[k].world)
 				{
-					int c;
-					
-					/* new map loaded */
-					mods_shutdown();
-					
-					for(c = 0; c < MAX_CLIENTS; c++)
-					{
-						if(clients[c].state == SRVCLIENT_STATE_EMPTY)
-							continue;
-						
-						server_send_map(c);
+					/*if(server_has_map(clients[k].new_world) {
+						if(clients[k].state != SRVCLIENT_STATE_EMPTY)
 						reset_client(c);
-						clients[c].state = SRVCLIENT_STATE_CONNECTING;
+							clients[c].state = SRVCLIENT_STATE_CONNECTING;
+					}*/
+					config.sv_map_reload = 0;
+				
+					/* load map */
+					if(server_load_map(config.sv_map))
+					{
+						int c;
+						
+						 //new map loaded 
+						//mods_shutdown();
+						
+						for(c = 0; c < MAX_CLIENTS; c++)
+						{
+							if(clients[c].state == SRVCLIENT_STATE_EMPTY)
+								continue;
+								
+							server_send_map(c);
+							reset_client(c);
+							clients[c].state = SRVCLIENT_STATE_CONNECTING;
+						}
+						
+						game_start_time = time_get();
+						current_tick = 0;
+						mods_init();
 					}
-					
-					game_start_time = time_get();
-					current_tick = 0;
-					mods_init();
-				}
-				else
-				{
-					dbg_msg("server", "failed to load map. mapname='%s'", config.sv_map);
-					config_set_sv_map(&config, current_map);
+					else
+					{
+						dbg_msg("server", "failed to load map. mapname='%s'", config.sv_map);
+						config_set_sv_map(&config, current_map);
+					}
 				}
 			}
 			

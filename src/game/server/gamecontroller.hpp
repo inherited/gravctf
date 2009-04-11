@@ -2,6 +2,7 @@
 #define GAME_SERVER_GAMECONTROLLER_H
 
 #include <base/vmath.hpp>
+#include <game/physics.hpp>
 
 /*
 	Class: Game Controller
@@ -13,10 +14,6 @@ class GAMECONTROLLER
 	vec2 spawn_points[3][64];
 	int num_spawn_points[3];
 protected:
-	int gravtiles;
-	vec2 gravtile[128];
-
-
 
 
 	struct SPAWNEVAL
@@ -58,9 +55,9 @@ protected:
 	bool force_balanced;
 	
 public:
-	virtual float gravity_x(vec2 pos);
+	/*virtual float gravity_x(vec2 pos);
 	virtual float gravity_y(vec2 pos);
-	virtual vec2 gravity(vec2 pos);
+	virtual vec2 gravity(vec2 pos);*/
 	
 	const char *gametype;
 

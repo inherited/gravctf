@@ -1,6 +1,7 @@
 /* copyright (c) 2007 magnus auvinen, see licence.txt for more info */
 #include <string.h>
 #include "gamecore.hpp"
+#include <game/physics.hpp>
 
 const char *TUNING_PARAMS::names[] =
 {
@@ -193,9 +194,11 @@ void CHARACTER_CORE::tick(bool use_input)
 	
 	vec2 target_direction = normalize(vec2(input.target_x, input.target_y));
 
-	vel.y += world->tuning.gravity;
+	//vel.y += world->tuning.gravity;
 	//vel.y += config.sv_gravy/100.0;
 	//vel.x += config.sv_gravx/100.0;
+	vel.x += gravity_x(pos);
+	vel.y += gravity_y(pos);
 	
 	float max_speed = grounded ? world->tuning.ground_control_speed : world->tuning.air_control_speed;
 	float accel = grounded ? world->tuning.ground_control_accel : world->tuning.air_control_accel;
@@ -423,6 +426,8 @@ void CHARACTER_CORE::tick(bool use_input)
 			
 			// handle player <-> player collision
 			float d = distance(pos, p->pos);
+			if(d < phys_size)
+				d = phys_size;
 			vec2 dir = normalize(pos - p->pos);
 			if(d < phys_size*1.25f && d > 1.0f)
 			{

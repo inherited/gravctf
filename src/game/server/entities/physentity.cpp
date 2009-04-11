@@ -11,6 +11,7 @@
 #include <game/server/gamecontroller.hpp>
 #include <game/server/gamecontext.hpp>
 #include <game/generated/g_protocol.hpp>
+#include <game/physics.hpp>
 
 #include "physentity.hpp"
 
@@ -94,8 +95,8 @@ void PHYS_ENTITY::die( )
 void PHYS_ENTITY::tick( )
 {
 	if(attracted) {
-		m_velocity.x += game.controller->gravity_x( m_position );
-		m_velocity.y += game.controller->gravity_y( m_position );	
+		m_velocity.x += gravity_x( m_position );
+		m_velocity.y += gravity_y( m_position );	
 	}
 	
 	

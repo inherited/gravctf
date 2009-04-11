@@ -11,6 +11,7 @@
 #include "laser.hpp"
 #include "projectile.hpp"
 #include <game/layers.hpp>
+#include <game/physics.hpp>
 
 struct INPUT_COUNT
 {
@@ -81,7 +82,7 @@ void CHARACTER::jump_overwrite()
 	return;
 	if ( input.jump ) {
 		input.jump = 0;
-		vec2 normalized_dir = normalize( (game.controller)->gravity(pos) );
+		vec2 normalized_dir = normalize( gravity(pos) );
 		
 		if ( !( core.jumped & 1 ) ) {
 			if ( is_grounded_b( normalized_dir ) ) {
@@ -625,15 +626,15 @@ void CHARACTER::tick()
 	//player_core core;
 	//core.pos = pos;
 	//core.jumped = jumped;
-	jump_overwrite();
+	//jump_overwrite();
 
 	core.input = input;
 
 	core.tick(true);
-	core.vel.y -= core.world->tuning.gravity;
+	//core.vel.y -= core.world->tuning.gravity;
 	
-	core.vel.x += (game.controller)->gravity_x(pos);
-	core.vel.y += (game.controller)->gravity_y(pos);
+	//core.vel.x += (game.controller)->gravity_x(pos);
+	//core.vel.y += (game.controller)->gravity_y(pos);
 	
 	
 	float phys_size = 28.0f;
