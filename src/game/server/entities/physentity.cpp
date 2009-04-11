@@ -8,7 +8,7 @@
 #include <engine/e_server_interface.h>
 
 #include <game/layers.hpp>
-#include <game/server/gamemodes/ctf.hpp>
+#include <game/server/gamecontroller.hpp>
 #include <game/server/gamecontext.hpp>
 #include <game/generated/g_protocol.hpp>
 
@@ -94,8 +94,8 @@ void PHYS_ENTITY::die( )
 void PHYS_ENTITY::tick( )
 {
 	if(attracted) {
-		m_velocity.x += ((GAMECONTROLLER_CTF*)game.controller)->gravity_x( m_position );
-		m_velocity.y += ((GAMECONTROLLER_CTF*)game.controller)->gravity_y( m_position );	
+		m_velocity.x += game.controller->gravity_x( m_position );
+		m_velocity.y += game.controller->gravity_y( m_position );	
 	}
 	
 	
