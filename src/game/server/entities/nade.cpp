@@ -19,9 +19,9 @@
 std::list<projectileNade *> nade_list;
 
 projectileNade::projectileNade( int owner_client, vec2 start_pos, vec2 direction )
-	: ENTITY( NETOBJ_INVALID )
+	: PHYS_ENTITY( owner_client, start_pos, direction )
 {
-	PHYS_ENTITY::PHYS_ENTITY(owner_client, start_pos, direction);
+	//PHYS_ENTITY::PHYS_ENTITY(owner_client, start_pos, direction);
 	
 	nade_list.push_front( this );
 }
@@ -33,12 +33,12 @@ void projectileNade::destroy( )
 	PHYS_ENTITY::destroy( );
 }
 
-bool PHYS_ENTITY::_is_colliding_with_nade( )
+bool projectileNade::_is_colliding_with_nade( )
 {
-	std::list<PHYS_ENTITY *>::iterator iter;
+	std::list<projectileNade *>::iterator iter;
 	bool is_collided = false;
 	
-	for ( iter = entity_list.begin( ); iter != entity_list.end( ); ++iter ) {
+	for ( iter = nade_list.begin( ); iter != nade_list.end( ); ++iter ) {
 		if ( *iter == this ) 
 			continue;
 		
@@ -72,10 +72,9 @@ void projectileNade::tick( )
 	if ( config.sv_smod_nade_collide_with_other ) {
 		if( _is_colliding_with_nade() ) 
 			die( );
-		}
 	}
 	
-	if ( config.sv_smod_nade_collide_with_player && colliding_with_characters( ) )
+	if ( config.sv_smod_nade_collide_with_player && colliding_with_character( ) )
 		die( );
 }
 

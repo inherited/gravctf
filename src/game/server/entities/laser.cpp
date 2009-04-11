@@ -69,7 +69,7 @@ void LASER::do_bounce()
 			energy -= distance(from, pos) + tuning.laser_bounce_cost;
 			bounces++;
 			
-			if(bounces > config.sv_laserbounces)
+			if(bounces > tuning.laser_bounce_num)
 				energy = -1;
 				
 			game.create_sound(pos, SOUND_RIFLE_BOUNCE);

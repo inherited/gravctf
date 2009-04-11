@@ -5,6 +5,8 @@
 class GAMECONTROLLER_DM : public GAMECONTROLLER
 {
 public:
+
+
 	GAMECONTROLLER_DM();
 	virtual void tick();
 };

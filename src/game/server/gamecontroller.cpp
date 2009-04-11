@@ -640,4 +640,33 @@ int GAMECONTROLLER::clampteam(int team)
 	return  0;
 }
 
+vec2 GAMECONTROLLER::gravity(vec2 pos)
+{
+	vec2 res;
+	res.x = 0;
+	res.y = 0;
+	for(int i = 0; i < gravtiles; i++) {
+		float ax = gravtile[i].x - pos.x;
+		float ay = gravtile[i].y - pos.y;
+		//normalize;
+		float len = sqrtf(ax*ax + ay*ay);
+		ax = ax / len;
+		ay = ay / len;
+		len /= config.sv_gravity_factor*1.0;
+		res.x += config.sv_gravity / 100.0f * ax / (pow(len, config.sv_gravity_power / 100.0));
+		res.y += config.sv_gravity / 100.0f * ay / (pow(len, config.sv_gravity_power / 100.0));
+	}
+	return res;
+}
+
+float GAMECONTROLLER::gravity_x(vec2 pos)
+{
+	return gravity(pos).x;
+}
+
+float GAMECONTROLLER::gravity_y(vec2 pos)
+{
+	return gravity(pos).y;
+}
+
 GAMECONTROLLER *gamecontroller = 0;
