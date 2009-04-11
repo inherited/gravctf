@@ -176,39 +176,15 @@ void CONTROLS::on_render()
 
 bool CONTROLS::on_mousemove(float x, float y)
 {
-	mouse_pos += vec2( x, y ); // TODO: ugly
+	mouse_pos += vec2( x, y );
 
-	//
 	float camera_max_distance = 200.0f;
-	float follow_factor = config.cl_mouse_followfactor/100.0f;
-	float deadzone = config.cl_mouse_deadzone;
-	float mouse_max = min(camera_max_distance/follow_factor + deadzone, (float)config.cl_mouse_max_distance);
 	
-	//vec2 camera_offset(0, 0);
-
-	if(gameclient.snap.spectate)
-	{
-		if(mouse_pos.x < 200.0f) mouse_pos.x = 200.0f;
-		if(mouse_pos.y < 200.0f) mouse_pos.y = 200.0f;
-		if(mouse_pos.x > col_width()*32-200.0f) mouse_pos.x = col_width()*32-200.0f;
-		if(mouse_pos.y > col_height()*32-200.0f) mouse_pos.y = col_height()*32-200.0f;
-		
-		target_pos = mouse_pos;
-	}
-	else
-	{
-		float l = length(mouse_pos);
-		
-		if(l > mouse_max)
-		{
-			mouse_pos = normalize(mouse_pos)*mouse_max;
-			l = mouse_max;
-		}
-		
-		//float offset_amount = max(l-deadzone, 0.0f) * follow_factor;
-		//if(l > 0.0001f) // make sure that this isn't 0
-			//camera_offset = normalize(mouse_pos)*offset_amount;
-	}
+	float mouse_max = min( ( camera_max_distance / ( config.cl_mouse_followfactor / 100.0f ) ) + 
+		(float)config.cl_mouse_deadzone, (float)config.cl_mouse_max_distance );
+	
+	if ( length( mouse_pos ) > mouse_max )
+		mouse_pos = normalize( mouse_pos ) * mouse_max;
 	
 	return true;
 }

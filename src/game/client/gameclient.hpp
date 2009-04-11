@@ -40,14 +40,6 @@ public:
 
 	// TODO: move this
 	TUNING_PARAMS tuning;
-	
-	enum
-	{
-		SERVERMODE_PURE=0,
-		SERVERMODE_MOD,
-		SERVERMODE_PUREMOD,
-	};
-	int servermode;
 
 	vec2 local_character_pos;
 
@@ -67,8 +59,6 @@ public:
 		
 		int local_cid;
 		int num_players;
-		int team_size[2];
-		bool spectate;
 		
 		//
 		struct CHARACTERINFO

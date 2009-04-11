@@ -1004,13 +1004,6 @@ void MENUS::on_render()
 		render_demoplayer(screen);
 	}
 	
-	if(client_state() == CLIENTSTATE_ONLINE && gameclient.servermode == gameclient.SERVERMODE_PUREMOD)
-	{
-		client_disconnect();
-		set_active(true);
-		popup = POPUP_PURE;
-	}
-	
 	if(!is_active())
 	{
 		escape_pressed = false;

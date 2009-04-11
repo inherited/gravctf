@@ -18,23 +18,17 @@ CAMERA::CAMERA()
 void CAMERA::on_render()
 {
 	//vec2 center;
-	zoom = 1.0f;
+	zoom = 0.1f;
 
-	// update camera center		
-	if(gameclient.snap.spectate)
-		center = gameclient.controls->mouse_pos;
-	else
-	{
+	// update camera center
+	float l = length(gameclient.controls->mouse_pos);
+	float deadzone = config.cl_mouse_deadzone;
+	float follow_factor = config.cl_mouse_followfactor/100.0f;
+	vec2 camera_offset(0, 0);
 
-		float l = length(gameclient.controls->mouse_pos);
-		float deadzone = config.cl_mouse_deadzone;
-		float follow_factor = config.cl_mouse_followfactor/100.0f;
-		vec2 camera_offset(0, 0);
-
-		float offset_amount = max(l-deadzone, 0.0f) * follow_factor;
-		if(l > 0.0001f) // make sure that this isn't 0
-			camera_offset = normalize(gameclient.controls->mouse_pos)*offset_amount;
-		
-		center = gameclient.local_character_pos + camera_offset;
-	}
+	float offset_amount = max(l-deadzone, 0.0f) * follow_factor;
+	if(l > 0.0001f) // make sure that this isn't 0
+		camera_offset = normalize(gameclient.controls->mouse_pos)*offset_amount;
+	
+	center = gameclient.local_character_pos + camera_offset;
 }

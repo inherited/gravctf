@@ -1,4 +1,6 @@
 #include <string.h>
+#include <stdint.h>
+
 #include <engine/e_client_interface.h>
 #include <engine/e_demorec.h>
 
@@ -91,11 +93,6 @@ static void load_sounds_thread( void *do_render )
 	}
 }
 
-static void con_serverdummy( void *result, void *user_data )
-{
-	dbg_msg("client", "this command is not available on the client");
-}
-
 void GAMECLIENT::on_console_init()
 {
 	// setup pointers
@@ -160,23 +157,6 @@ void GAMECLIENT::on_console_init()
 	MACRO_REGISTER_COMMAND( "kill", "", 
 		CFGFLAG_CLIENT, con_kill, this, "Kill yourself" );
 	
-	// register server dummy commands for tab completion
-	MACRO_REGISTER_COMMAND( "tune", "si", 
-		CFGFLAG_SERVER, con_serverdummy, 0, "Tune variable to value");
-	MACRO_REGISTER_COMMAND( "tune_reset", "", 
-		CFGFLAG_SERVER, con_serverdummy, 0, "Reset tuning");
-	MACRO_REGISTER_COMMAND( "tune_dump", "", 
-		CFGFLAG_SERVER, con_serverdummy, 0, "Dump tuning");
-	MACRO_REGISTER_COMMAND( "change_map", "r", 
-		CFGFLAG_SERVER, con_serverdummy, 0, "Change map");
-	MACRO_REGISTER_COMMAND( "restart", "?i", 
-		CFGFLAG_SERVER, con_serverdummy, 0, "Restart in x seconds");
-	MACRO_REGISTER_COMMAND( "broadcast", "r", 
-		CFGFLAG_SERVER, con_serverdummy, 0, "Broadcast message");
-	/*MACRO_REGISTER_COMMAND("say", "r", CFGFLAG_SERVER, con_serverdummy, 0);*/
-	MACRO_REGISTER_COMMAND( "set_team", "ii", 
-		CFGFLAG_SERVER, con_serverdummy, 0, "Set team of player to team");
-	
 	// let all the other components register their console commands
 	for ( int i = 0; i < all.num; i++ )
 		all.components[i]->on_console_init( );
@@ -233,8 +213,6 @@ void GAMECLIENT::on_init()
 	
 	int64 end = time_get();
 	dbg_msg("", "%f.2ms", ((end-start)*1000)/(float)time_freq());
-	
-	servermode = SERVERMODE_PURE;
 }
 
 void GAMECLIENT::on_save()
@@ -284,23 +262,17 @@ int GAMECLIENT::on_snapinput(int *data)
 
 void GAMECLIENT::on_connected()
 {
-	layers_init();
-	col_init();
-	render_tilemap_generate_skip();
+	layers_init( );
+	col_init( );
+	render_tilemap_generate_skip( );
 
-	for(int i = 0; i < all.num; i++)
-	{
-		all.components[i]->on_mapload();
-		all.components[i]->on_reset();
+	for ( int index = 0; index < all.num; index++ ) {
+		all.components[index]->on_mapload( );
+		all.components[index]->on_reset( );
 	}
 	
-	SERVER_INFO current_server_info;
-	client_serverinfo(&current_server_info);
-	
-	servermode = SERVERMODE_PURE;
-	
 	// send the inital info
-	send_info(true);
+	send_info( true );
 }
 
 void GAMECLIENT::on_reset()
@@ -385,42 +357,19 @@ void GAMECLIENT::on_message(int msgtype)
 {
 	
 	// special messages
-	if(msgtype == NETMSGTYPE_SV_EXTRAPROJECTILE)
-	{
-		/*
-		int num = msg_unpack_int();
-		
-		for(int k = 0; k < num; k++)
-		{
-			NETOBJ_PROJECTILE proj;
-			for(unsigned i = 0; i < sizeof(NETOBJ_PROJECTILE)/sizeof(int); i++)
-				((int *)&proj)[i] = msg_unpack_int();
-				
-			if(msg_unpack_error())
-				return;
-				
-			if(extraproj_num != MAX_EXTRA_PROJECTILES)
-			{
-				extraproj_projectiles[extraproj_num] = proj;
-				extraproj_num++;
-			}
-		}
-		
-		return;*/
-	}
-	else if(msgtype == NETMSGTYPE_SV_TUNEPARAMS)
-	{
+	if ( msgtype == NETMSGTYPE_SV_TUNEPARAMS ) {
 		// unpack the new tuning
 		TUNING_PARAMS new_tuning;
+		
 		int *params = (int *)&new_tuning;
-		for(unsigned i = 0; i < sizeof(TUNING_PARAMS)/sizeof(int); i++)
-			params[i] = msg_unpack_int();
+		uint32_t data_len = sizeof( TUNING_PARAMS ) / sizeof( int );
+		
+		for ( uint32_t index = 0; index < data_len; index++ )
+			params[index] = msg_unpack_int( );
 
 		// check for unpacking errors
-		if(msg_unpack_error())
+		if ( msg_unpack_error( ) )
 			return;
-		
-		servermode = SERVERMODE_PURE;
 			
 		// apply new tuning
 		tuning = new_tuning;
@@ -428,35 +377,33 @@ void GAMECLIENT::on_message(int msgtype)
 	}
 	
 	void *rawmsg = netmsg_secure_unpack(msgtype);
-	if(!rawmsg)
-	{
-		dbg_msg("client", "dropped weird message '%s' (%d), failed on '%s'", netmsg_get_name(msgtype), msgtype, netmsg_failed_on());
+	if ( !rawmsg ) {
+		dbg_msg( "client", "dropped weird message '%s' (%d), failed on '%s'", 
+			netmsg_get_name( msgtype ), msgtype, netmsg_failed_on( ) );
+		
 		return;
 	}
 
 	// TODO: this should be done smarter
-	for(int i = 0; i < all.num; i++)
-		all.components[i]->on_message(msgtype, rawmsg);
+	for ( int index = 0; index < all.num; index++ )
+		all.components[index]->on_message( msgtype, rawmsg );
 	
-	if(msgtype == NETMSGTYPE_SV_READYTOENTER)
-	{
+	if ( msgtype == NETMSGTYPE_SV_READYTOENTER ) {
 		client_entergame();
-	}
-	else if (msgtype == NETMSGTYPE_SV_EMOTICON)
-	{
+	
+	} else if ( msgtype == NETMSGTYPE_SV_EMOTICON ) {
 		NETMSG_SV_EMOTICON *msg = (NETMSG_SV_EMOTICON *)rawmsg;
 
 		// apply
 		clients[msg->cid].emoticon = msg->emoticon;
-		clients[msg->cid].emoticon_start = client_tick();
-	}
-	else if(msgtype == NETMSGTYPE_SV_SOUNDGLOBAL)
-	{
-		if(suppress_events)
+		clients[msg->cid].emoticon_start = client_tick( );
+	
+	} else if ( msgtype == NETMSGTYPE_SV_SOUNDGLOBAL ) {
+		if ( suppress_events )
 			return;
 			
 		NETMSG_SV_SOUNDGLOBAL *msg = (NETMSG_SV_SOUNDGLOBAL *)rawmsg;
-		gameclient.sounds->play(SOUNDS::CHN_GLOBAL, msg->soundid, 1.0f, vec2(0,0));
+		gameclient.sounds->play( SOUNDS::CHN_GLOBAL, msg->soundid, 1.0f, vec2( 0, 0 ) );
 	}		
 }
 
@@ -529,137 +476,109 @@ void GAMECLIENT::on_snapshot()
 	snap.local_cid = -1;
 
 	// secure snapshot
-	{
-		int num = snap_num_items(SNAP_CURRENT);
-		for(int index = 0; index < num; index++)
-		{
-			SNAP_ITEM item;
-			void *data = snap_get_item(SNAP_CURRENT, index, &item);
-			if(netobj_validate(item.type, data, item.datasize) != 0)
-			{
-				if(config.debug)
-					dbg_msg("game", "invalidated index=%d type=%d (%s) size=%d id=%d", index, item.type, netobj_get_name(item.type), item.datasize, item.id);
-				snap_invalidate_item(SNAP_CURRENT, index);
+	int snap_num = snap_num_items( SNAP_CURRENT );
+	SNAP_ITEM item;
+	void *data;
+	
+	for ( int index = 0; index < snap_num; index++ ) {
+		data = snap_get_item( SNAP_CURRENT, index, &item );
+		
+		if ( netobj_validate( item.type, data, item.datasize ) != 0 ) {
+			if ( config.debug ) {
+				dbg_msg( "game", "invalidated index=%d type=%d (%s) size=%d id=%d", 
+					index, item.type, netobj_get_name( item.type ), item.datasize, item.id );
 			}
-		}
-	}
-		
-	process_events();
-
-	// go trough all the items in the snapshot and gather the info we want
-	{
-		snap.team_size[0] = snap.team_size[1] = 0;
-		
-		int num = snap_num_items(SNAP_CURRENT);
-		for(int i = 0; i < num; i++)
-		{
-			SNAP_ITEM item;
-			const void *data = snap_get_item(SNAP_CURRENT, i, &item);
-
-			if(item.type == NETOBJTYPE_CLIENT_INFO)
-			{
+			snap_invalidate_item(SNAP_CURRENT, index);
+			
+		} else {
+			if ( item.type == NETOBJTYPE_CLIENT_INFO ) {
 				const NETOBJ_CLIENT_INFO *info = (const NETOBJ_CLIENT_INFO *)data;
 				int cid = item.id;
-				ints_to_str(&info->name0, 6, clients[cid].name);
-				ints_to_str(&info->skin0, 6, clients[cid].skin_name);
+				
+				ints_to_str( &info->name0, 6, clients[cid].name );
+				ints_to_str( &info->skin0, 6, clients[cid].skin_name );
 				
 				clients[cid].use_custom_color = info->use_custom_color;
 				clients[cid].color_body = info->color_body;
 				clients[cid].color_feet = info->color_feet;
 				
 				// prepare the info
-				if(clients[cid].skin_name[0] == 'x' || clients[cid].skin_name[1] == '_')
-					str_copy(clients[cid].skin_name, "default", 64);
-					
+				if ( clients[cid].skin_name[0] == 'x' || clients[cid].skin_name[1] == '_' )
+					str_copy( clients[cid].skin_name, "default", 64 );
+				
 				clients[cid].skin_info.color_body = skins->get_color(clients[cid].color_body);
 				clients[cid].skin_info.color_feet = skins->get_color(clients[cid].color_feet);
 				clients[cid].skin_info.size = 64;
 				
 				// find new skin
-				clients[cid].skin_id = gameclient.skins->find(clients[cid].skin_name);
+				clients[cid].skin_id = gameclient.skins->find( clients[cid].skin_name );
 				
-				if(clients[cid].skin_id < 0)
-				{
-					clients[cid].skin_id = gameclient.skins->find("default");
-					if(clients[cid].skin_id < 0)
+				if ( clients[cid].skin_id < 0 ) {
+					clients[cid].skin_id = gameclient.skins->find( "default" );
+					
+					if ( clients[cid].skin_id < 0 )
 						clients[cid].skin_id = 0;
 				}
 				
-				if(clients[cid].use_custom_color)
-					clients[cid].skin_info.texture = gameclient.skins->get(clients[cid].skin_id)->color_texture;
-				else
-				{
-					clients[cid].skin_info.texture = gameclient.skins->get(clients[cid].skin_id)->org_texture;
-					clients[cid].skin_info.color_body = vec4(1,1,1,1);
-					clients[cid].skin_info.color_feet = vec4(1,1,1,1);
+				if ( !clients[cid].use_custom_color ) {
+					clients[cid].skin_info.texture = gameclient.skins->get( 
+						clients[cid].skin_id )->org_texture;
+					clients[cid].skin_info.color_body = vec4( 1, 1, 1, 1 );
+					clients[cid].skin_info.color_feet = vec4( 1, 1, 1, 1 );
+					
+				} else {
+					clients[cid].skin_info.texture = gameclient.skins->get( 
+						clients[cid].skin_id )->color_texture;
 				}
 				
-				clients[cid].update_render_info();
+				clients[cid].update_render_info( );
 				gameclient.snap.num_players++;
 				
-			}
-			else if(item.type == NETOBJTYPE_PLAYER_INFO)
-			{
+			} else if ( item.type == NETOBJTYPE_PLAYER_INFO ) {
 				const NETOBJ_PLAYER_INFO *info = (const NETOBJ_PLAYER_INFO *)data;
 				
 				snap.player_infos[info->cid] = info;
 				
-				if(info->local)
-				{
+				if ( info->local ) {
 					snap.local_cid = item.id;
 					snap.local_info = info;
 				}
 				
-			}
-			else if(item.type == NETOBJTYPE_CHARACTER)
-			{
-				const void *old = snap_find_item(SNAP_PREV, NETOBJTYPE_CHARACTER, item.id);
-				if(old)
-				{
+			} else if( item.type == NETOBJTYPE_CHARACTER ) {
+				const void *old = snap_find_item( SNAP_PREV, NETOBJTYPE_CHARACTER, item.id );
+				
+				if ( old ) {
 					snap.characters[item.id].active = true;
 					snap.characters[item.id].prev = *((const NETOBJ_CHARACTER *)old);
 					snap.characters[item.id].cur = *((const NETOBJ_CHARACTER *)data);
 
-					if(snap.characters[item.id].prev.tick)
-						evolve(&snap.characters[item.id].prev, client_prevtick());
-					if(snap.characters[item.id].cur.tick)
-						evolve(&snap.characters[item.id].cur, client_tick());
+					if ( snap.characters[item.id].prev.tick )
+						evolve(&snap.characters[item.id].prev, client_prevtick( ) );
+					if ( snap.characters[item.id].cur.tick )
+						evolve(&snap.characters[item.id].cur, client_tick( ) );
 				}
 			}
 		}
 	}
 	
+	process_events( );
+	
 	// setup local pointers
-	if(snap.local_cid >= 0)
-	{
+	if ( snap.local_cid >= 0 ) {
 		SNAPSTATE::CHARACTERINFO *c = &snap.characters[snap.local_cid];
-		if(c->active)
-		{
+		
+		if ( c && c->active ) {
 			snap.local_character = &c->cur;
 			snap.local_prev_character = &c->prev;
 			local_character_pos = vec2(snap.local_character->x, snap.local_character->y);
 		}
 	}
-	else
-		snap.spectate = true;
 	
 	TUNING_PARAMS standard_tuning;
-	SERVER_INFO current_server_info;
-	client_serverinfo(&current_server_info);
-	if(current_server_info.gametype[0] != '0')
-	{
-		if(strcmp(current_server_info.gametype, "DM") != 0 && strcmp(current_server_info.gametype, "TDM") != 0 && strcmp(current_server_info.gametype, "CTF") != 0)
-			servermode = SERVERMODE_MOD;
-		else if(memcmp(&standard_tuning, &tuning, sizeof(TUNING_PARAMS)) == 0)
-			servermode = SERVERMODE_PURE;
-		else
-			servermode = SERVERMODE_PUREMOD;
-	}
 	
-
 	// update render info
-	for(int i = 0; i < MAX_CLIENTS; i++)
-		clients[i].update_render_info();
+	for ( int index = 0; index < MAX_CLIENTS; index++ )
+		clients[index].update_render_info( );
 }
 
 void GAMECLIENT::on_predict()
