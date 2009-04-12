@@ -633,8 +633,8 @@ void CHARACTER::tick()
 	core.tick(true);
 	//core.vel.y -= core.world->tuning.gravity;
 	
-	//core.vel.x += (game.controller)->gravity_x(pos);
-	//core.vel.y += (game.controller)->gravity_y(pos);
+	core.vel.x += gravity_x(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
+	core.vel.y += gravity_y(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
 	
 	
 	float phys_size = 28.0f;
@@ -646,6 +646,30 @@ void CHARACTER::tick()
 	{
 		die(player->client_id, WEAPON_WORLD);
 	}
+	
+	int jid;
+	if(jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP ||
+			jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP ||
+			jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP ||
+			jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP)
+	{
+		serverchange = false;
+		die(player->client_id, WEAPON_WORLD);
+		char *dest = mysql_get_destination_from_id(config.sv_map, jid);
+		if(strlen(dest)>0) {
+			if(mysql_is_server_active(dest)) {
+				mysql_update_player_location(server_clientname(player->client_id), dest);
+				die(player->client_id, WEAPON_WORLD);
+				serverchange = true;
+			}
+		}
+		
+		if(!jumped) {
+			game.send_chat_target( player->client_id, "Jump failed" );
+		}
+	}
+	
+	
 
 	// handle weapons
 	handle_weapons();

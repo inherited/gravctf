@@ -67,6 +67,8 @@ public:
 	int num_inputs;
 	int jumped;
 	
+	bool serverchange;
+	
 	int damage_taken_tick;
 
 	int health;

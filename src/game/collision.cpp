@@ -35,6 +35,8 @@ int col_init()
 			tiles[i].index = COLFLAG_SOLID;
 		else if(index == TILE_NOHOOK)
 			tiles[i].index = COLFLAG_SOLID|COLFLAG_NOHOOK;
+		else if(index >= TILE_JUMP)
+			tiles[i].index = index
 		else
 			tiles[i].index = 0;
 	}
