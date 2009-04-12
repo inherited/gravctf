@@ -82,6 +82,8 @@ Objects = [
 		NetIntAny("y"),
 		NetIntAny("vx"),
 		NetIntAny("vy"),
+		NetIntGX("gx"),
+		NetIntGY("gy"),
 
 		NetIntAny("angle"),
 		NetIntRange("direction", -1, 1),

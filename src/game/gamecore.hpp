@@ -169,6 +169,8 @@ public:
 	
 	vec2 pos;
 	vec2 vel;
+	float gx;
+	float gy;
 	
 	vec2 hook_pos;
 	vec2 hook_dir;

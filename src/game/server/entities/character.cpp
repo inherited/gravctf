@@ -633,8 +633,11 @@ void CHARACTER::tick()
 	core.tick(true);
 	//core.vel.y -= core.world->tuning.gravity;
 	
-	core.vel.x += gravity_x(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
-	core.vel.y += gravity_y(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
+	core.gx = gravity_x(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
+	core.gy = gravity_y(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
+	core.vel.x += core.gx;
+	core.vel.y += core.gy;
+	
 	
 	
 	float phys_size = 28.0f;
@@ -664,7 +667,7 @@ void CHARACTER::tick()
 			}
 		}
 		
-		if(!jumped) {
+		if(!serverchange) {
 			game.send_chat_target( player->client_id, "Jump failed" );
 		}
 	}
