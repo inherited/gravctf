@@ -491,8 +491,8 @@ void CHARACTER_CORE::write(NETOBJ_CHARACTER_CORE *obj_core)
 	obj_core->hooked_player = hooked_player;
 	obj_core->jumped = jumped;
 	obj_core->direction = direction;
-	obj_core->gx = round(gx*256.0f);
-	obj_core->gy = round(gy+256.0f);
+	obj_core->gx = round(grav.x*256.0f);
+	obj_core->gy = round(grav.y+256.0f);
 	obj_core->angle = angle;
 }
 
@@ -502,8 +502,8 @@ void CHARACTER_CORE::read(const NETOBJ_CHARACTER_CORE *obj_core)
 	pos.y = obj_core->y;
 	vel.x = obj_core->vx/256.0f;
 	vel.y = obj_core->vy/256.0f;
-	gx = obj_core->gx/256.0f;
-	gy = obj_core->gy/256.0f;
+	grav.x = obj_core->gx/256.0f;
+	grav.y = obj_core->gy/256.0f;
 	hook_state = obj_core->hook_state;
 	hook_tick = obj_core->hook_tick;
 	hook_pos.x = obj_core->hook_x;

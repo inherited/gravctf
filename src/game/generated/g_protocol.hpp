@@ -152,6 +152,8 @@ struct NETOBJ_CHARACTER_CORE
 	int y;
 	int vx;
 	int vy;
+	int gx;
+	int gy;
 	int angle;
 	int direction;
 	int jumped;

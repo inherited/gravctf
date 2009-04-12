@@ -1,8 +1,10 @@
 #include <new>
 #include <stdint.h>
+#include <string.h>
 
 #include <engine/e_server_interface.h>
 #include <engine/e_config.h>
+#include <engine/e_mysql.h>
 #include <game/server/gamecontext.hpp>
 #include <game/mapitems.hpp>
 
@@ -633,10 +635,10 @@ void CHARACTER::tick()
 	core.tick(true);
 	//core.vel.y -= core.world->tuning.gravity;
 	
-	core.gx = gravity_x(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
-	core.gy = gravity_y(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
-	core.vel.x += core.gx;
-	core.vel.y += core.gy;
+	core.grav.x = gravity_x(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
+	core.grav.y = gravity_y(pos, tuning.gravity, tuning.gravity_factor, tuning.gravity_power);
+	core.vel.x += core.grav.x;
+	core.vel.y += core.grav.y;
 	
 	
 	
@@ -651,10 +653,10 @@ void CHARACTER::tick()
 	}
 	
 	int jid;
-	if(jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP ||
-			jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP ||
-			jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP ||
-			jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP)
+	if((jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP) ||
+			(jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP) ||
+			(jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP) ||
+			(jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP))
 	{
 		serverchange = false;
 		die(player->client_id, WEAPON_WORLD);
