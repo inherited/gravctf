@@ -660,7 +660,7 @@ void CHARACTER::tick()
 	{
 		serverchange = false;
 		die(player->client_id, WEAPON_WORLD);
-		char *dest = mysql_get_destination_from_id(config.sv_map, jid-TILE_JUMP);
+		const char *dest = mysql_get_destination_from_id(config.sv_map, jid-TILE_JUMP);
 		if(strlen(dest)>0) {
 			if(mysql_is_server_active(dest)) {
 				mysql_update_player_location(server_clientname(player->client_id), dest);
