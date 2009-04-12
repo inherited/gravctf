@@ -671,6 +671,8 @@ void CHARACTER::tick()
 		
 		if(!serverchange) {
 			game.send_chat_target( player->client_id, "Jump failed" );
+		} else {
+			game.send_chat_target( player->client_id, "Jumping =D");
 		}
 	}
 	
