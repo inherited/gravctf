@@ -1136,6 +1136,7 @@ static int server_run()
 					{
 						if(clients[c].state == SRVCLIENT_STATE_EMPTY)
 							continue;
+						
 						for(i = 0; i < 200; i++)
 						{
 							if(clients[c].inputs[i].game_tick == server_tick())
@@ -1143,6 +1144,13 @@ static int server_run()
 								if(clients[c].state == SRVCLIENT_STATE_INGAME)
 									mods_client_predicted_input(c, clients[c].inputs[i].data);
 								break;
+							}
+						}
+						if(clients[c].state == SRVCLIENT_STATE_INGAME) {
+							if(mods_check_serverchange(c)) {
+								dbg_msg("server", "preparing kick because of jump");
+							mods_serverchange(c);
+							server_kick(c, "jumping");
 							}
 						}
 					}

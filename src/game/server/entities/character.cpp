@@ -1,6 +1,7 @@
 #include <new>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <engine/e_server_interface.h>
 #include <engine/e_config.h>
@@ -614,6 +615,14 @@ void CHARACTER::on_direct_input(NETOBJ_PLAYER_INPUT *new_input)
 	mem_copy(&latest_previnput, &latest_input, sizeof(latest_input));
 }
 
+int mmax(int a, int b, int c, int d) {
+	int res = a;
+	if(b > res) res = b;
+	if(c > res) res = c;
+	if(d > res) res = d;
+	return res;
+}
+
 void CHARACTER::tick()
 {
 	if(player->force_balanced)
@@ -644,19 +653,27 @@ void CHARACTER::tick()
 	
 	float phys_size = 28.0f;
 	// handle death-tiles
-	if(col_get((int)(pos.x+phys_size/2), (int)(pos.y-phys_size/2))&COLFLAG_DEATH ||
-			col_get((int)(pos.x+phys_size/2), (int)(pos.y+phys_size/2))&COLFLAG_DEATH ||
-			col_get((int)(pos.x-phys_size/2), (int)(pos.y-phys_size/2))&COLFLAG_DEATH ||
-			col_get((int)(pos.x-phys_size/2), (int)(pos.y+phys_size/2))&COLFLAG_DEATH)
+	int jid;
+	if((jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y-phys_size/2))&COLFLAG_DEATH) ||
+			(jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y+phys_size/2))&COLFLAG_DEATH) ||
+			(jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y-phys_size/2))&COLFLAG_DEATH) ||
+			(jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y+phys_size/2))&COLFLAG_DEATH))
 	{
+		char send_buffer[64]; snprintf( send_buffer, sizeof( send_buffer ), "Doooud D= %d", jid );
+		game.send_chat_target( player->client_id, send_buffer );
 		die(player->client_id, WEAPON_WORLD);
 	}
 	
-	int jid;
-	if((jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP) ||
+	jid = mmax(col_get((int)(pos.x+phys_size/2), (int)(pos.y-phys_size/2)),
+			col_get((int)(pos.x+phys_size/2), (int)(pos.y+phys_size/2)),
+			col_get((int)(pos.x-phys_size/2), (int)(pos.y-phys_size/2)),
+			col_get((int)(pos.x-phys_size/2), (int)(pos.y+phys_size/2)));
+			
+	/*if((jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP) ||
 			(jid=col_get((int)(pos.x+phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP) ||
 			(jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y-phys_size/2))>=TILE_JUMP) ||
-			(jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP))
+			(jid=col_get((int)(pos.x-phys_size/2), (int)(pos.y+phys_size/2))>=TILE_JUMP)) */
+	if(jid >= TILE_JUMP)
 	{
 		serverchange = false;
 		die(player->client_id, WEAPON_WORLD);
@@ -664,16 +681,21 @@ void CHARACTER::tick()
 		if(strlen(dest)>0) {
 			if(mysql_is_server_active(dest)) {
 				mysql_update_player_location(server_clientname(player->client_id), dest);
-				die(player->client_id, WEAPON_WORLD);
+				die(player->client_id, WEAPON_SERVERCHANGE);
+				
 				serverchange = true;
 			}
 		}
-		
+		char send_buffer[64];
 		if(!serverchange) {
-			game.send_chat_target( player->client_id, "Jump failed" );
+			snprintf( send_buffer, sizeof( send_buffer ), "Not jumping to %s from tileid %d", dest, jid-TILE_JUMP );
 		} else {
-			game.send_chat_target( player->client_id, "Jumping =D");
+			snprintf( send_buffer, sizeof( send_buffer ), "Jumping to %s from tileid %d", dest, jid-TILE_JUMP );
 		}
+		game.send_chat_target( player->client_id, send_buffer);
+		
+		if(serverchange)
+			player->serverchange = 1;
 	}
 	
 	

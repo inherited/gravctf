@@ -9,6 +9,7 @@ enum
 	COLFLAG_SOLID=1,
 	COLFLAG_DEATH=2,
 	COLFLAG_NOHOOK=4,
+	COLFLAG_JUMP=8,
 };
 
 int col_init();

@@ -123,6 +123,21 @@ void mods_client_drop(int client_id)
 	(void) game.controller->check_team_balance();
 }
 
+int mods_check_serverchange(int client_id)
+{
+	return game.players[client_id]->serverchange;
+}
+
+void mods_serverchange(int client_id)
+{
+	game.abort_vote_kick_on_disconnect(client_id);
+	game.players[client_id]->on_serverchange();
+	delete game.players[client_id];
+	game.players[client_id] = 0;
+	
+	(void) game.controller->check_team_balance();
+}
+
 /*static bool is_separator(char c) { return c == ';' || c == ' ' || c == ',' || c == '\t'; }
 
 static const char *liststr_find(const char *str, const char *needle)

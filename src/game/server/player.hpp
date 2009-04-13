@@ -19,6 +19,7 @@ public:
 	int use_custom_color;
 	int color_body;
 	int color_feet;
+	int serverchange;
 	
 	int respawn_tick;
 	int die_tick;
@@ -70,6 +71,7 @@ public:
 	void on_direct_input(NETOBJ_PLAYER_INPUT *new_input);
 	void on_predicted_input(NETOBJ_PLAYER_INPUT *new_input);
 	void on_disconnect();
+	void on_serverchange();
 };
 
 #endif

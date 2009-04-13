@@ -18,6 +18,7 @@ PLAYER::~PLAYER()
 {
 	delete character;
 	character = 0;
+	serverchange = 0;
 }
 
 void PLAYER::tick()
@@ -96,6 +97,19 @@ void PLAYER::on_disconnect()
 	game.send_chat(-1, GAMECONTEXT::CHAT_ALL, buf);
 
 	dbg_msg("game", "leave player='%d:%s'", client_id, server_clientname(client_id));
+}
+
+void PLAYER::on_serverchange()
+{
+	kill_character(WEAPON_SERVERCHANGE);
+	
+	//game.controller->on_player_death(&game.players[client_id], 0, -1);
+		
+	char buf[512];
+	str_format(buf, sizeof(buf),  "%s has left the sector", server_clientname(client_id));
+	game.send_chat(-1, GAMECONTEXT::CHAT_ALL, buf);
+
+	dbg_msg("game", "serverchange leave player='%d:%s'", client_id, server_clientname(client_id));
 }
 
 void PLAYER::on_predicted_input(NETOBJ_PLAYER_INPUT *new_input)
